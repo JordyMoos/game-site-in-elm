@@ -1,43 +1,51 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href)
-import Routing exposing (..)
-import Page.Home as HomePage
-import Page.AllItemCollections as AllItemCollectionsPage
-import Page.UserAgreement as UserAgreementPage
-import Page.NotFound as NotFoundPage
+import Routing
+import Page.NotFound.NotFound as NotFound
+import Page.Blank.Blank as Blank
+import Page.Errored.Errored as Errored
+import Page.Home.LoadingHome as LoadingHome
+import Page.Home.Home as Home
+import Page.UserAgreement.UserAgreement as UserAgreement
 import Navigation
-import Data.ItemCollection as ItemCollection
-import RemoteData exposing (WebData)
-import Command.FetchItemCollections as FetchItemCollectionsCommand
+
+
+type Page
+    = BlankPage
+    | NotFoundPage
+    | ErroredPage Errored.Model
+    | HomePage Home.Model
+    | UserAgreementPage UserAgreement.Model
+
+
+type Loading
+    = LoadingHome LoadingHome.Model
+
+
+type PageState
+    = Loaded Page
+    | Transitioning Page Loading
 
 
 type alias Model =
-    { route : Route
-    , itemCollections : WebData (List ItemCollection.ItemCollection)
-    }
-
-
-initialModel : Route -> Model
-initialModel route =
-    { route = route
-    , itemCollections = RemoteData.Loading
+    { pageState : PageState
     }
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    let
-        currentRoute =
-            Routing.parseLocation location
-    in
-        ( initialModel currentRoute, FetchItemCollectionsCommand.fetchItemCollections OnFetchItemCollections )
+    setRoute (Just Routing.UserAgreement) initModel
+
+
+initModel : Model
+initModel =
+    { pageState = Loaded BlankPage }
 
 
 main : Program Never Model Msg
 main =
-    Navigation.program OnLocationChange
+    Navigation.program ChangeLocation
         { view = view
         , init = init
         , update = update
@@ -47,76 +55,76 @@ main =
 
 type Msg
     = NoOp
-    | OnFetchItemCollections (WebData (List ItemCollection.ItemCollection))
-    | OnLocationChange Navigation.Location
+    | ChangeLocation Navigation.Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        OnLocationChange location ->
+        ChangeLocation location ->
             let
                 newRoute =
-                    parseLocation location
+                    Routing.fromLocation location
+
+                _ =
+                    Debug.log "new route" (toString newRoute)
             in
-                ( { model | route = newRoute }, Cmd.none )
+                -- ( { model | route = newRoute }, Cmd.none )
+                ( model, Cmd.none )
 
-        OnFetchItemCollections response ->
-            ( { model | itemCollections = response }, Cmd.none )
-
-        _ ->
+        NoOp ->
             ( model, Cmd.none )
+
+
+setRoute : Maybe Routing.Route -> Model -> ( Model, Cmd Msg )
+setRoute maybeRoute model =
+    case maybeRoute of
+        Nothing ->
+            { model | pageState = Loaded NotFoundPage } ! []
+
+        Just Routing.Home ->
+            model ! []
+
+        Just Routing.AllItemCollections ->
+            model ! []
+
+        Just Routing.UserAgreement ->
+            { model | pageState = Loaded (UserAgreementPage (UserAgreement.init)) } ! []
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ navView
-        , pageView model
-        , itemCollectionsView model.itemCollections
+    case model.pageState of
+        Loaded page ->
+            viewPage page
+
+        Transitioning oldPage transitionData ->
+            viewPage oldPage |> viewLoading
+
+
+viewPage : Page -> Html Msg
+viewPage page =
+    case page of
+        BlankPage ->
+            Blank.view
+
+        NotFoundPage ->
+            NotFound.view
+
+        ErroredPage model ->
+            Errored.view model
+
+        HomePage model ->
+            Home.view model
+
+        UserAgreementPage model ->
+            UserAgreement.view model
+
+
+viewLoading : Html Msg -> Html Msg
+viewLoading content =
+    div
+        []
+        [ div [] [ h1 [] [ text "Loading..." ] ]
+        , content
         ]
-
-
-navView : Html Msg
-navView =
-    ul []
-        [ li [] [ a [ href "#" ] [ text "Home" ] ]
-        , li [] [ a [ href "#all-categories" ] [ text "All categories" ] ]
-        ]
-
-
-pageView : Model -> Html Msg
-pageView model =
-    case model.route of
-        HomeRoute ->
-            HomePage.view model
-
-        AllItemCollectionsRoute ->
-            AllItemCollectionsPage.view model
-
-        UserAgreementRoute ->
-            UserAgreementPage.view model
-
-        NotFoundRoute ->
-            NotFoundPage.view model
-
-
-itemCollectionsView : WebData (List ItemCollection.ItemCollection) -> Html Msg
-itemCollectionsView itemCollectionsWebData =
-    case itemCollectionsWebData of
-        RemoteData.NotAsked ->
-            text ""
-
-        RemoteData.Loading ->
-            text "Loading..."
-
-        RemoteData.Success itemCollections ->
-            List.map itemCollectionView itemCollections |> ul []
-
-        RemoteData.Failure error ->
-            text (toString error)
-
-
-itemCollectionView : ItemCollection.ItemCollection -> Html Msg
-itemCollectionView itemCollection =
-    li [] [ text itemCollection.title ]

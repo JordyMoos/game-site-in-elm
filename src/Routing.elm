@@ -1,30 +1,24 @@
-module Routing exposing (..)
+module Routing exposing (Route(..), fromLocation)
 
 import Navigation exposing (Location)
 import UrlParser exposing (..)
 
 
 type Route
-    = HomeRoute
-    | AllItemCollectionsRoute
-    | UserAgreementRoute
-    | NotFoundRoute
+    = Home
+    | AllItemCollections
+    | UserAgreement
+
+
+fromLocation : Location -> Maybe Route
+fromLocation =
+    parseHash matchers
 
 
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ map HomeRoute top
-        , map AllItemCollectionsRoute (s "all-categories")
-        , map UserAgreementRoute (s "user-agreement")
+        [ map Home top
+        , map AllItemCollections (s "all-categories")
+        , map UserAgreement (s "user-agreement")
         ]
-
-
-parseLocation : Location -> Route
-parseLocation location =
-    case (parseHash matchers location) of
-        Just route ->
-            route
-
-        Nothing ->
-            NotFoundRoute

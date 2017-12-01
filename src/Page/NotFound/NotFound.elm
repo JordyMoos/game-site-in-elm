@@ -1,9 +1,9 @@
-module Page.NotFound exposing (..)
+module Page.NotFound.NotFound exposing (..)
 
 import Html exposing (..)
 
 
-view : a -> Html msg
-view model =
+view : Html msg
+view =
     div []
         [ h1 [] [ text "Not Found Page" ] ]
