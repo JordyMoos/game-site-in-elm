@@ -83,13 +83,27 @@ setRoute maybeRoute model =
             { model | pageState = Loaded NotFoundPage } ! []
 
         Just Routing.Home ->
-            model ! []
+            let
+                oldPage = getVisualPage model.pageState
+                (newModel, newCmd) = LoadingHome.init
+            in
+                { model | pageState = Transitioning oldPage (LoadingHome newModel) } ! []
 
         Just Routing.AllItemCollections ->
             model ! []
 
         Just Routing.UserAgreement ->
             { model | pageState = Loaded (UserAgreementPage (UserAgreement.init)) } ! []
+
+
+getVisualPage : PageState -> Page
+getVisualPage pageState =
+    case pageState of
+        Loaded page ->
+            page
+
+        Transitioning page _ ->
+            page
 
 
 view : Model -> Html Msg
