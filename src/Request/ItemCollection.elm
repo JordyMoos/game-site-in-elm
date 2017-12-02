@@ -1,4 +1,4 @@
-module Request.ItemCollections exposing (list)
+module Request.ItemCollection exposing (list)
 
 import Http
 import Data.ItemCollection as ItemCollection
