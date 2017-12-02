@@ -3,6 +3,7 @@ module Page.Home.Home exposing (Model, init, view)
 import Html exposing (..)
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
+import View.Layout.WithSidebar as WithSidebarLayout
 
 
 type alias Model =
@@ -18,5 +19,4 @@ init =
 
 view : a -> Html msg
 view model =
-    div []
-        [ h1 [] [ text "Home Page" ] ]
+    WithSidebarLayout.view
