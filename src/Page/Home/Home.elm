@@ -5,7 +5,7 @@ import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
 import View.Layout.WithSidebar as WithSidebarLayout
 import View.MainContentStyle as MainContentStyle
-import View.SidebarStyle as SidebarStyle
+import View.Component.Sidebar as Sidebar
 import Element
 
 
@@ -20,8 +20,8 @@ init =
     Model [] []
 
 
-view : a -> Html msg
+view : Model -> Html msg
 view model =
     WithSidebarLayout.view
         (Element.el MainContentStyle.None [] (Element.text "Home Page"))
-        (Element.el SidebarStyle.None [] (Element.text "Sidebar"))
+        (Sidebar.view model.itemCollections)
