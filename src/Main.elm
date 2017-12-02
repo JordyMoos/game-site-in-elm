@@ -36,7 +36,7 @@ type alias Model =
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    setRoute (Just Routing.UserAgreement) initModel
+    setRoute (Routing.fromLocation location) initModel
 
 
 initModel : Model
