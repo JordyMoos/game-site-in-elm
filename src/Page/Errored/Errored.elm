@@ -4,12 +4,12 @@ import Html exposing (..)
 
 
 type alias Model =
-    ()
+    String
 
 
 init : Model
 init =
-    ()
+    ""
 
 
 view : a -> Html msg

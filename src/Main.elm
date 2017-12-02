@@ -97,10 +97,16 @@ update msg model =
                                 ! [ Cmd.map LoadingHomeMsg resultCmd ]
 
                         TransitionStatus.Success data ->
-                            ( model, Cmd.none )
+                            { model
+                                | pageState = Loaded (HomePage data)
+                            }
+                                ! []
 
                         TransitionStatus.Failed error ->
-                            ( model, Cmd.none )
+                            { model
+                                | pageState = Loaded (ErroredPage error)
+                            }
+                                ! []
             in
                 ( newModel, newCmd )
 
@@ -156,7 +162,8 @@ view model =
             viewPage page
 
         Transitioning oldPage transitionData ->
-            viewPage oldPage |> viewLoading
+            viewPage oldPage
+                |> viewLoading
 
 
 viewPage : Page -> Html Msg
