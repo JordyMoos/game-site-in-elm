@@ -8,6 +8,7 @@ import Page.Errored.Errored as Errored
 import Page.Home.LoadingHome as LoadingHome
 import Page.Home.Home as Home
 import Page.UserAgreement.UserAgreement as UserAgreement
+import Data.TransitionStatus as TransitionStatus
 import Navigation
 
 
@@ -72,20 +73,36 @@ update msg model =
             in
                 setRoute newRoute model
 
-        ( LoadingHomeMsg subMsg, Transitioning _ (LoadingHome subModel) ) ->
+        ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel) ) ->
             let
                 _ =
                     Debug.log "msg" (toString subMsg)
 
-                status =
+                transitionStatus =
                     LoadingHome.update subMsg subModel
 
                 _ =
-                    Debug.log "status" (toString status)
+                    Debug.log "status" (toString transitionStatus)
 
-                -- @todo continue here with handling status
+                -- @todo fix offcourse
+                ( newModel, newCmd ) =
+                    case transitionStatus of
+                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
+                            { model
+                                | pageState =
+                                    Transitioning
+                                        oldPage
+                                        (LoadingHome resultModel)
+                            }
+                                ! [ Cmd.map LoadingHomeMsg resultCmd ]
+
+                        TransitionStatus.Success data ->
+                            ( model, Cmd.none )
+
+                        TransitionStatus.Failed error ->
+                            ( model, Cmd.none )
             in
-                ( model, Cmd.none )
+                ( newModel, newCmd )
 
         ( NoOp, _ ) ->
             ( model, Cmd.none )
