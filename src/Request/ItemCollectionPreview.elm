@@ -6,7 +6,8 @@ import RemoteData
 import Request.Helpers exposing (apiUrl)
 
 
-list : (RemoteData.WebData (List ItemCollectionPreview.ItemCollectionPreview) -> msg)
+list :
+    (RemoteData.WebData (List ItemCollectionPreview.ItemCollectionPreview) -> msg)
     -> Cmd msg
 list msg =
     Http.get listUrl ItemCollectionPreview.listDecoder

@@ -9,7 +9,6 @@ type alias Model =
     }
 
 
-
 init : Model
 init =
     Model []

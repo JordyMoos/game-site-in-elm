@@ -56,12 +56,13 @@ main =
 type Msg
     = NoOp
     | ChangeLocation Navigation.Location
+    | LoadingHomeMsg LoadingHome.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        ChangeLocation location ->
+    case ( msg, model.pageState ) of
+        ( ChangeLocation location, _ ) ->
             let
                 newRoute =
                     Routing.fromLocation location
@@ -69,11 +70,32 @@ update msg model =
                 _ =
                     Debug.log "new route" (toString newRoute)
             in
-                -- ( { model | route = newRoute }, Cmd.none )
+                setRoute newRoute model
+
+        ( LoadingHomeMsg subMsg, Transitioning _ (LoadingHome subModel) ) ->
+            let
+                _ =
+                    Debug.log "msg" (toString subMsg)
+
+                status =
+                    LoadingHome.update subMsg subModel
+
+                _ =
+                    Debug.log "status" (toString status)
+
+                -- @todo continue here with handling status
+            in
                 ( model, Cmd.none )
 
-        NoOp ->
+        ( NoOp, _ ) ->
             ( model, Cmd.none )
+
+        ( _, _ ) ->
+            let
+                _ =
+                    Debug.log "wrong message for state" (toString ( msg, model.pageState ))
+            in
+                ( model, Cmd.none )
 
 
 setRoute : Maybe Routing.Route -> Model -> ( Model, Cmd Msg )
@@ -84,10 +106,14 @@ setRoute maybeRoute model =
 
         Just Routing.Home ->
             let
-                oldPage = getVisualPage model.pageState
-                (newModel, newCmd) = LoadingHome.init
+                oldPage =
+                    getVisualPage model.pageState
+
+                ( newModel, newCmd ) =
+                    LoadingHome.init
             in
-                { model | pageState = Transitioning oldPage (LoadingHome newModel) } ! []
+                { model | pageState = Transitioning oldPage (LoadingHome newModel) }
+                    ! [ Cmd.map LoadingHomeMsg newCmd ]
 
         Just Routing.AllItemCollections ->
             model ! []

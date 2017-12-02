@@ -2,6 +2,7 @@ module Util.RemoteDataExt.Status exposing (Status(..), asStatus, isFailed, isSuc
 
 import RemoteData exposing (RemoteData)
 
+
 type Status
     = Failed
     | Success
@@ -21,6 +22,7 @@ asStatus remoteData =
 isFailed : Status -> Bool
 isFailed =
     (==) Failed
+
 
 isSuccess : Status -> Bool
 isSuccess =

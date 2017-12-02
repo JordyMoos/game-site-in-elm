@@ -1,4 +1,4 @@
-module Page.Home.LoadingHome exposing (Model, init, update)
+module Page.Home.LoadingHome exposing (Model, Msg(..), init, update)
 
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
@@ -24,7 +24,9 @@ type Msg
 init : ( Model, Cmd Msg )
 init =
     { itemCollections = RemoteData.NotAsked
-     , itemCollectionPreviews = RemoteData.NotAsked} ! []
+    , itemCollectionPreviews = RemoteData.NotAsked
+    }
+        ! []
         |> requestData
 
 
@@ -34,30 +36,32 @@ requestData ( model, cmd ) =
         itemCollectionsCmd =
             ItemCollectionRequest.list ItemCollectionsResponse
 
-        itemCollectionPreviewsCmd
-            = ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
+        itemCollectionPreviewsCmd =
+            ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
     in
         { model
-        | itemCollections = RemoteData.Loading
-        , itemCollectionPreviews = RemoteData.Loading }
-        ! [itemCollectionsCmd, itemCollectionPreviewsCmd, cmd]
+            | itemCollections = RemoteData.Loading
+            , itemCollectionPreviews = RemoteData.Loading
+        }
+            ! [ itemCollectionsCmd, itemCollectionPreviewsCmd, cmd ]
 
 
 update : Msg -> Model -> TransitionStatus.TransitionStatus Model Msg Home.Model
 update msg model =
     let
-        (newModel, newCmd) =
+        ( newModel, newCmd ) =
             case msg of
                 ItemCollectionsResponse response ->
                     { model | itemCollections = response } ! []
 
-
                 ItemCollectionPreviewsResponse response ->
                     { model | itemCollectionPreviews = response } ! []
     in
-        asTransitionStatus (newModel, newCmd)
+        asTransitionStatus ( newModel, newCmd )
 
-asTransitionStatus : ( Model, Cmd Msg )
+
+asTransitionStatus :
+    ( Model, Cmd Msg )
     -> TransitionStatus.TransitionStatus Model Msg Home.Model
 asTransitionStatus ( model, cmd ) =
     let
@@ -67,7 +71,8 @@ asTransitionStatus ( model, cmd ) =
         finishedCount =
             getFinishedDependencyCount model
 
-        totalCount = totalDependencyCount model
+        totalCount =
+            totalDependencyCount model
 
         isFinished =
             finishedCount == totalCount
