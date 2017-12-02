@@ -82,6 +82,7 @@ asTransitionStatus ( model, cmd ) =
         else if isFinished then
             TransitionStatus.Success
                 { itemCollections = RemoteData.withDefault [] model.itemCollections
+                , itemCollectionPreviews = RemoteData.withDefault [] model.itemCollectionPreviews
                 }
         else
             TransitionStatus.Pending
