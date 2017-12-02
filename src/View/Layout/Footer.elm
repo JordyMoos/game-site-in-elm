@@ -1,4 +1,4 @@
-module View.Layout.Header exposing (Styles(..), styles, view)
+module View.Layout.Footer exposing (Styles(..), styles, view)
 
 import Element exposing (..)
 import Style exposing (..)
@@ -15,4 +15,4 @@ styles =
 
 view : Element Styles variation msg
 view =
-    el None [] (text "Header")
+    el None [] (text "Footer")

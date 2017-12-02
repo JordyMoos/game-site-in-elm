@@ -7,13 +7,19 @@ import Style exposing (..)
 import Style.Color as Color
 import Style.Font as Font
 import View.Layout.Header as Header
+import View.Layout.Footer as Footer
 import Style.Sheet as Sheet
+import View.MainContentStyle as MainContentStyle
+import View.SidebarStyle as SidebarStyle
 
 
 type Styles
     = None
     | Title
     | HeaderStyles Header.Styles
+    | FooterStyles Footer.Styles
+    | MainContentStyles MainContentStyle.Styles
+    | SidebarStyles SidebarStyle.Styles
 
 
 styleSheet : StyleSheet Styles variation
@@ -26,14 +32,26 @@ styleSheet =
             , Font.size 50
             ]
         , Sheet.map HeaderStyles (\x -> x) Header.styles |> Sheet.merge
+        , Sheet.map FooterStyles (\x -> x) Footer.styles |> Sheet.merge
+        , Sheet.map MainContentStyles (\x -> x) MainContentStyle.styles |> Sheet.merge
+        , Sheet.map SidebarStyles (\x -> x) SidebarStyle.styles |> Sheet.merge
         ]
 
 
-view : Html msg
-view =
+view :
+    Element MainContentStyle.Styles variation msg
+    -> Element SidebarStyle.Styles variation msg
+    -> Html msg
+view content sideContent =
     Element.layout styleSheet <|
-        row
+        column
             None
             []
-            [ el None [] (text "Title")
+            [ Element.mapAll (\x -> x) HeaderStyles (\x -> x) Header.view
+            , Element.row None
+                []
+                [ mainContent None [] (Element.mapAll (\x -> x) MainContentStyles (\x -> x) content)
+                , el None [] (Element.mapAll (\x -> x) SidebarStyles (\x -> x) sideContent)
+                ]
+            , Element.mapAll (\x -> x) FooterStyles (\x -> x) Footer.view
             ]
