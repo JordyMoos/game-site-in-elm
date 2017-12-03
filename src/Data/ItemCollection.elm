@@ -10,6 +10,11 @@ type alias ItemCollection =
     }
 
 
+empty : ItemCollection
+empty =
+    ItemCollection "" ""
+
+
 listDecoder : Decoder (List ItemCollection)
 listDecoder =
     Decode.list decoder

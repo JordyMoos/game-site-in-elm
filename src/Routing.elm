@@ -6,8 +6,9 @@ import UrlParser exposing (..)
 
 type Route
     = Home
-    | AllItemCollections
     | UserAgreement
+    | AllItemCollections
+    | ItemCollection String
 
 
 fromLocation : Location -> Maybe Route
@@ -19,6 +20,7 @@ matchers : Parser (Route -> a) a
 matchers =
     oneOf
         [ map Home top
-        , map AllItemCollections (s "all-categories")
         , map UserAgreement (s "user-agreement")
+        , map AllItemCollections (s "all-categories")
+        , map ItemCollection (s "category" </> string)
         ]

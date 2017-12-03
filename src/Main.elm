@@ -7,6 +7,8 @@ import Page.Blank.Blank as Blank
 import Page.Errored.Errored as Errored
 import Page.Home.LoadingHome as LoadingHome
 import Page.Home.Home as Home
+import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
+import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
 import Data.TransitionStatus as TransitionStatus
 import Navigation
@@ -18,10 +20,12 @@ type Page
     | ErroredPage Errored.Model
     | HomePage Home.Model
     | UserAgreementPage UserAgreement.Model
+    | ItemCollectionPage ItemCollection.Model
 
 
 type Loading
     = LoadingHome LoadingHome.Model
+    | LoadingItemCollection LoadingItemCollection.Model
 
 
 type PageState
@@ -58,6 +62,7 @@ type Msg
     = NoOp
     | ChangeLocation Navigation.Location
     | LoadingHomeMsg LoadingHome.Msg
+    | LoadingItemCollectionMsg LoadingItemCollection.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -75,16 +80,9 @@ update msg model =
 
         ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel) ) ->
             let
-                _ =
-                    Debug.log "msg" (toString subMsg)
-
                 transitionStatus =
                     LoadingHome.update subMsg subModel
 
-                _ =
-                    Debug.log "status" (toString transitionStatus)
-
-                -- @todo fix offcourse
                 ( newModel, newCmd ) =
                     case transitionStatus of
                         TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
@@ -99,6 +97,36 @@ update msg model =
                         TransitionStatus.Success data ->
                             { model
                                 | pageState = Loaded (HomePage data)
+                            }
+                                ! []
+
+                        TransitionStatus.Failed error ->
+                            { model
+                                | pageState = Loaded (ErroredPage error)
+                            }
+                                ! []
+            in
+                ( newModel, newCmd )
+
+        ( LoadingItemCollectionMsg subMsg, Transitioning oldPage (LoadingItemCollection subModel) ) ->
+            let
+                transitionStatus =
+                    LoadingItemCollection.update subMsg subModel
+
+                ( newModel, newCmd ) =
+                    case transitionStatus of
+                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
+                            { model
+                                | pageState =
+                                    Transitioning
+                                        oldPage
+                                        (LoadingItemCollection resultModel)
+                            }
+                                ! [ Cmd.map LoadingItemCollectionMsg resultCmd ]
+
+                        TransitionStatus.Success data ->
+                            { model
+                                | pageState = Loaded (ItemCollectionPage data)
                             }
                                 ! []
 
@@ -137,6 +165,17 @@ setRoute maybeRoute model =
             in
                 { model | pageState = Transitioning oldPage (LoadingHome newModel) }
                     ! [ Cmd.map LoadingHomeMsg newCmd ]
+
+        Just (Routing.ItemCollection slug) ->
+            let
+                oldPage =
+                    getVisualPage model.pageState
+
+                ( newModel, newCmd ) =
+                    LoadingItemCollection.init slug
+            in
+                { model | pageState = Transitioning oldPage (LoadingItemCollection newModel) }
+                    ! [ Cmd.map LoadingItemCollectionMsg newCmd ]
 
         Just Routing.AllItemCollections ->
             model ! []
@@ -180,6 +219,9 @@ viewPage page =
 
         HomePage model ->
             Home.view model
+
+        ItemCollectionPage model ->
+            ItemCollection.view model
 
         UserAgreementPage model ->
             UserAgreement.view model
