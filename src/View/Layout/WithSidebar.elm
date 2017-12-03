@@ -12,6 +12,7 @@ import View.Component.Footer as Footer
 import Style.Sheet as Sheet
 import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
+import Util.Util exposing (keepMsg, keepVariation)
 
 
 type Styles
@@ -33,11 +34,11 @@ styleSheet =
             , Color.background Color.white
             , Font.size 50
             ]
-        , Sheet.map HeaderStyles (\x -> x) Header.styles |> Sheet.merge
-        , Sheet.map NavbarStyles (\x -> x) Navbar.styles |> Sheet.merge
-        , Sheet.map FooterStyles (\x -> x) Footer.styles |> Sheet.merge
-        , Sheet.map MainContentStyles (\x -> x) MainContentStyle.styles |> Sheet.merge
-        , Sheet.map SidebarStyles (\x -> x) Sidebar.styles |> Sheet.merge
+        , Sheet.map HeaderStyles keepVariation Header.styles |> Sheet.merge
+        , Sheet.map NavbarStyles keepVariation Navbar.styles |> Sheet.merge
+        , Sheet.map FooterStyles keepVariation Footer.styles |> Sheet.merge
+        , Sheet.map MainContentStyles keepVariation MainContentStyle.styles |> Sheet.merge
+        , Sheet.map SidebarStyles keepVariation Sidebar.styles |> Sheet.merge
         ]
 
 
@@ -50,12 +51,12 @@ view content sideContent =
         column
             None
             []
-            [ Element.mapAll (\x -> x) HeaderStyles (\x -> x) Header.view
-            , Element.mapAll (\x -> x) NavbarStyles (\x -> x) Navbar.view
+            [ Element.mapAll keepMsg HeaderStyles keepVariation Header.view
+            , Element.mapAll keepMsg NavbarStyles keepVariation Navbar.view
             , Element.row None
                 []
-                [ mainContent None [] (Element.mapAll (\x -> x) MainContentStyles (\x -> x) content)
-                , el None [] (Element.mapAll (\x -> x) SidebarStyles (\x -> x) sideContent)
+                [ mainContent None [] (Element.mapAll keepMsg MainContentStyles keepVariation content)
+                , el None [] (Element.mapAll keepMsg SidebarStyles keepVariation sideContent)
                 ]
-            , Element.mapAll (\x -> x) FooterStyles (\x -> x) Footer.view
+            , Element.mapAll keepMsg FooterStyles keepVariation Footer.view
             ]
