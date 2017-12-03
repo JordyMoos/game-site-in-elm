@@ -9,13 +9,14 @@ import Request.Helpers exposing (apiUrl)
 searchForItemCollectionSlug :
     (RemoteData.WebData ItemSearchResult.ItemSearchResult -> msg)
     -> String
+    -> Int
     -> Cmd msg
-searchForItemCollectionSlug msg itemCollectionSlug =
-    Http.get (searchUrl itemCollectionSlug) ItemSearchResult.decoder
+searchForItemCollectionSlug msg itemCollectionSlug page =
+    Http.get (searchUrl itemCollectionSlug page) ItemSearchResult.decoder
         |> RemoteData.sendRequest
         |> Cmd.map msg
 
 
-searchUrl : String -> String
-searchUrl itemCollectionSlug =
-    apiUrl ("/item-by-slug/" ++ itemCollectionSlug)
+searchUrl : String -> Int -> String
+searchUrl itemCollectionSlug page =
+    apiUrl ("/item-by-slug/" ++ itemCollectionSlug ++ "/" ++ (toString page))

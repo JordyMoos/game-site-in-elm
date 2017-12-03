@@ -15,6 +15,7 @@ type alias Model =
     , itemCollection : WebData ItemCollection.ItemCollection
     , itemSearchResult : WebData ItemSearchResult.ItemSearchResult
     , slug : String
+    , page : Int
     }
 
 
@@ -24,12 +25,13 @@ type Msg
     | ItemSearchResultResponse (WebData ItemSearchResult.ItemSearchResult)
 
 
-init : String -> ( Model, Cmd Msg )
-init slug =
+init : String -> Int -> ( Model, Cmd Msg )
+init slug page =
     { itemCollections = RemoteData.NotAsked
     , itemCollection = RemoteData.NotAsked
     , itemSearchResult = RemoteData.NotAsked
     , slug = slug
+    , page = page
     }
         ! []
         |> requestData
@@ -45,7 +47,7 @@ requestData ( model, cmd ) =
             ItemCollectionRequest.bySlug ItemCollectionResponse model.slug
 
         itemSearchResultCmd =
-            ItemRequest.searchForItemCollectionSlug ItemSearchResultResponse model.slug
+            ItemRequest.searchForItemCollectionSlug ItemSearchResultResponse model.slug model.page
     in
         { model
             | itemCollections = RemoteData.Loading

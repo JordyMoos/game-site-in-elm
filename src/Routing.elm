@@ -8,7 +8,7 @@ type Route
     = Home
     | UserAgreement
     | AllItemCollections
-    | ItemCollection String
+    | ItemCollection String Int
 
 
 fromLocation : Location -> Maybe Route
@@ -22,5 +22,6 @@ matchers =
         [ map Home top
         , map UserAgreement (s "user-agreement")
         , map AllItemCollections (s "all-categories")
-        , map ItemCollection (s "category" </> string)
+        , map ((flip ItemCollection) 1) (s "category" </> string)
+        , map ItemCollection (s "category" </> string </> int)
         ]

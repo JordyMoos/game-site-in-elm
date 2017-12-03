@@ -166,13 +166,13 @@ setRoute maybeRoute model =
                 { model | pageState = Transitioning oldPage (LoadingHome newModel) }
                     ! [ Cmd.map LoadingHomeMsg newCmd ]
 
-        Just (Routing.ItemCollection slug) ->
+        Just (Routing.ItemCollection slug page) ->
             let
                 oldPage =
                     getVisualPage model.pageState
 
                 ( newModel, newCmd ) =
-                    LoadingItemCollection.init slug
+                    LoadingItemCollection.init slug page
             in
                 { model | pageState = Transitioning oldPage (LoadingItemCollection newModel) }
                     ! [ Cmd.map LoadingItemCollectionMsg newCmd ]

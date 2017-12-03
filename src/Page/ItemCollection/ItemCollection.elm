@@ -26,9 +26,9 @@ view model =
         (Element.column MainContentStyle.None
             []
             [ Element.h1 MainContentStyle.Title [] (Element.text (model.itemCollection.title ++ " Games"))
-            , paginationView model.pagination
+            , paginationView model.pagination model.itemCollection
             , itemsView model.items
-            , paginationView model.pagination
+            , paginationView model.pagination model.itemCollection
             ]
         )
         (Sidebar.view model.itemCollections)
@@ -57,13 +57,16 @@ itemView item =
         ]
 
 
-paginationView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
-paginationView pagination =
+paginationView :
+    Pagination.Pagination
+    -> ItemCollection.ItemCollection
+    -> Element.Element MainContentStyle.Styles variation msg
+paginationView pagination itemCollection =
     Element.column
         MainContentStyle.None
         []
         [ paginationTextView pagination
-        , paginationButtonsContainerView pagination
+        , paginationButtonsContainerView pagination itemCollection
         ]
 
 
@@ -75,8 +78,11 @@ paginationTextView pagination =
         (Element.text <| Pagination.message pagination)
 
 
-paginationButtonsContainerView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
-paginationButtonsContainerView pagination =
+paginationButtonsContainerView :
+    Pagination.Pagination
+    -> ItemCollection.ItemCollection
+    -> Element.Element MainContentStyle.Styles variation msg
+paginationButtonsContainerView pagination itemCollection =
     Element.navigation
         MainContentStyle.None
         []
@@ -90,10 +96,10 @@ paginationButtonsContainerView pagination =
                     (\page ->
                         case page of
                             1 ->
-                                ""
+                                "#/category/" ++ itemCollection.slug
 
-                            x ->
-                                ""
+                            number ->
+                                "#/category/" ++ itemCollection.slug ++ "/" ++ (toString number)
                     )
                 }
                 |> List.map toLink
