@@ -1,4 +1,4 @@
-module View.Layout.Header exposing (Styles(..), styles, view)
+module View.Component.Header exposing (Styles(..), styles, view)
 
 import Element exposing (..)
 import Element.Attributes exposing (..)

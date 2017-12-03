@@ -227,10 +227,13 @@ viewPage page =
             UserAgreement.view model
 
 
+
+-- This should add the delayed loading bar
+
+
 viewLoading : Html Msg -> Html Msg
 viewLoading content =
     div
         []
-        [ div [] [ h1 [] [ text "Loading..." ] ]
-        , content
+        [ content
         ]

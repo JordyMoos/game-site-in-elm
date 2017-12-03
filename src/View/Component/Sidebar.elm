@@ -31,3 +31,4 @@ view itemCollections =
 itemCollectionView : ItemCollection.ItemCollection -> Element Styles variable msg
 itemCollectionView itemCollection =
     el None [] (text itemCollection.title)
+        |> Element.link ("#/category/" ++ itemCollection.slug)

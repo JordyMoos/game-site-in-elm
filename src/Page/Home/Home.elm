@@ -57,4 +57,5 @@ itemCollectionPreviewView itemCollectionPreview =
             { src = itemCollectionPreview.image
             , caption = itemCollectionPreview.title
             }
+            |> Element.link ("#/category/" ++ itemCollectionPreview.slug)
         ]

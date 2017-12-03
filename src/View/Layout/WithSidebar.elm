@@ -6,8 +6,9 @@ import Element exposing (..)
 import Style exposing (..)
 import Style.Color as Color
 import Style.Font as Font
-import View.Layout.Header as Header
-import View.Layout.Footer as Footer
+import View.Component.Header as Header
+import View.Component.Navbar as Navbar
+import View.Component.Footer as Footer
 import Style.Sheet as Sheet
 import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
@@ -17,6 +18,7 @@ type Styles
     = None
     | Title
     | HeaderStyles Header.Styles
+    | NavbarStyles Navbar.Styles
     | FooterStyles Footer.Styles
     | MainContentStyles MainContentStyle.Styles
     | SidebarStyles Sidebar.Styles
@@ -32,6 +34,7 @@ styleSheet =
             , Font.size 50
             ]
         , Sheet.map HeaderStyles (\x -> x) Header.styles |> Sheet.merge
+        , Sheet.map NavbarStyles (\x -> x) Navbar.styles |> Sheet.merge
         , Sheet.map FooterStyles (\x -> x) Footer.styles |> Sheet.merge
         , Sheet.map MainContentStyles (\x -> x) MainContentStyle.styles |> Sheet.merge
         , Sheet.map SidebarStyles (\x -> x) Sidebar.styles |> Sheet.merge
@@ -48,6 +51,7 @@ view content sideContent =
             None
             []
             [ Element.mapAll (\x -> x) HeaderStyles (\x -> x) Header.view
+            , Element.mapAll (\x -> x) NavbarStyles (\x -> x) Navbar.view
             , Element.row None
                 []
                 [ mainContent None [] (Element.mapAll (\x -> x) MainContentStyles (\x -> x) content)
