@@ -8,6 +8,7 @@ import View.Layout.WithSidebar as WithSidebarLayout
 import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
 import Element
+import Element.Attributes as Attributes
 
 
 type alias Model =
@@ -24,10 +25,30 @@ view model =
         (Element.column MainContentStyle.None
             []
             [ Element.h1 MainContentStyle.None [] (Element.text (model.itemCollection.title ++ " games"))
-            , Element.el
-                MainContentStyle.None
-                []
-                (Element.text "Content")
+            , itemsView model.items
             ]
         )
         (Sidebar.view model.itemCollections)
+
+
+itemsView : List Item.Item -> Element.Element MainContentStyle.Styles variation msg
+itemsView items =
+    Element.wrappedRow
+        MainContentStyle.None
+        [ Attributes.spacing 5 ]
+        (List.map itemView items)
+
+
+itemView : Item.Item -> Element.Element MainContentStyle.Styles variation msg
+itemView item =
+    Element.column
+        MainContentStyle.None
+        []
+        [ Element.el MainContentStyle.None [] (Element.text item.title)
+        , Element.image MainContentStyle.None
+            []
+            { src = item.image
+            , caption = item.title
+            }
+        , Element.el MainContentStyle.None [] (Element.text (item.since ++ " ago"))
+        ]
