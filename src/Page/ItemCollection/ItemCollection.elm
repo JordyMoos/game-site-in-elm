@@ -1,8 +1,9 @@
-module Page.ItemCollection.ItemCollection exposing (Model, init, view)
+module Page.ItemCollection.ItemCollection exposing (Model, view)
 
 import Html
 import Data.ItemCollection as ItemCollection
 import Data.Item as Item
+import Data.Pagination as Pagination
 import View.Layout.WithSidebar as WithSidebarLayout
 import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
@@ -13,12 +14,8 @@ type alias Model =
     { itemCollections : List ItemCollection.ItemCollection
     , itemCollection : ItemCollection.ItemCollection
     , items : List Item.Item
+    , pagination : Pagination.Pagination
     }
-
-
-init : Model
-init =
-    Model [] ItemCollection.empty []
 
 
 view : Model -> Html.Html msg

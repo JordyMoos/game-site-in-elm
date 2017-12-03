@@ -1,17 +1,17 @@
 module Request.Item exposing (searchForItemCollectionSlug)
 
 import Http
-import Data.Item as Item
+import Data.ItemSearchResult as ItemSearchResult
 import RemoteData
 import Request.Helpers exposing (apiUrl)
 
 
 searchForItemCollectionSlug :
-    (RemoteData.WebData (List Item.Item) -> msg)
+    (RemoteData.WebData ItemSearchResult.ItemSearchResult -> msg)
     -> String
     -> Cmd msg
 searchForItemCollectionSlug msg itemCollectionSlug =
-    Http.get (searchUrl itemCollectionSlug) Item.listDecoder
+    Http.get (searchUrl itemCollectionSlug) ItemSearchResult.decoder
         |> RemoteData.sendRequest
         |> Cmd.map msg
 
