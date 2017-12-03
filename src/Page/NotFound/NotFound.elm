@@ -1,9 +1,16 @@
-module Page.NotFound.NotFound exposing (..)
+module Page.NotFound.NotFound exposing (view)
 
-import Html exposing (..)
+import Html exposing (Html)
+import Element
+import View.MainContentStyle as MainContentStyle
+import View.Layout.Plain as PlainLayout
 
 
 view : Html msg
 view =
-    div []
-        [ h1 [] [ text "Not Found Page" ] ]
+    PlainLayout.view
+        (Element.h1
+            MainContentStyle.Title
+            []
+            (Element.text "Not Found")
+        )

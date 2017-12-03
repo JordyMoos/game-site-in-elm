@@ -19,7 +19,7 @@ type Page
     | NotFoundPage
     | ErroredPage Errored.Model
     | HomePage Home.Model
-    | UserAgreementPage UserAgreement.Model
+    | UserAgreementPage
     | ItemCollectionPage ItemCollection.Model
 
 
@@ -181,7 +181,7 @@ setRoute maybeRoute model =
             model ! []
 
         Just Routing.UserAgreement ->
-            { model | pageState = Loaded (UserAgreementPage (UserAgreement.init)) } ! []
+            { model | pageState = Loaded UserAgreementPage } ! []
 
 
 getVisualPage : PageState -> Page
@@ -223,8 +223,8 @@ viewPage page =
         ItemCollectionPage model ->
             ItemCollection.view model
 
-        UserAgreementPage model ->
-            UserAgreement.view model
+        UserAgreementPage ->
+            UserAgreement.view
 
 
 

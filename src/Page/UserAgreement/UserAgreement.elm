@@ -1,19 +1,16 @@
-module Page.UserAgreement.UserAgreement exposing (Model, init, view)
+module Page.UserAgreement.UserAgreement exposing (view)
 
-import Html exposing (..)
-
-
-type alias Model =
-    ()
-
-
-init : Model
-init =
-    ()
+import Html exposing (Html)
+import Element
+import View.MainContentStyle as MainContentStyle
+import View.Layout.Plain as PlainLayout
 
 
-view : a -> Html msg
-view model =
-    div []
-        [ h1 [] [ text "User Agreement Page" ]
-        ]
+view : Html msg
+view =
+    PlainLayout.view
+        (Element.column MainContentStyle.None
+            []
+            [ Element.h1 MainContentStyle.Title [] (Element.text "User Agreement")
+            ]
+        )

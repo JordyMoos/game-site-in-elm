@@ -1,18 +1,24 @@
-module Page.Errored.Errored exposing (Model, init, view)
+module Page.Errored.Errored exposing (Model, view)
 
-import Html exposing (..)
+import Html exposing (Html)
+import Element
+import View.MainContentStyle as MainContentStyle
+import View.Layout.Plain as PlainLayout
 
 
 type alias Model =
     String
 
 
-init : Model
-init =
-    ""
-
-
-view : a -> Html msg
+view : Model -> Html msg
 view model =
-    div []
-        [ h1 [] [ text "Errored Page" ] ]
+    PlainLayout.view
+        (Element.column MainContentStyle.None
+            []
+            [ Element.h1 MainContentStyle.Title [] (Element.text "Errored Page")
+            , Element.el
+                MainContentStyle.None
+                []
+                (Element.text model)
+            ]
+        )

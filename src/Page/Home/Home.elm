@@ -1,4 +1,4 @@
-module Page.Home.Home exposing (Model, init, view)
+module Page.Home.Home exposing (Model, view)
 
 import Html
 import Data.ItemCollection as ItemCollection
@@ -14,11 +14,6 @@ type alias Model =
     { itemCollections : List ItemCollection.ItemCollection
     , itemCollectionPreviews : List ItemCollectionPreview.ItemCollectionPreview
     }
-
-
-init : Model
-init =
-    Model [] []
 
 
 view : Model -> Html.Html msg
