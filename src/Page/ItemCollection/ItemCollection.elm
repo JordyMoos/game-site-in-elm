@@ -9,7 +9,6 @@ import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
 import Element
 import Element.Attributes as Attributes
-import Maybe.Extra
 import Module.Paginator.Paginator as Paginator
 
 
@@ -83,5 +82,24 @@ paginationButtonsContainerView pagination =
         []
         { name = "Pagination"
         , options =
-            []
+            Paginator.paginator
+                { currentPage = pagination.page
+                , totalPages = ceiling (toFloat pagination.total / toFloat pagination.perPage)
+                , pagesAroundCurrent = 2
+                , linkStrategy =
+                    (\page ->
+                        case page of
+                            1 ->
+                                ""
+
+                            x ->
+                                ""
+                    )
+                }
+                |> List.map toLink
         }
+
+
+toLink : Paginator.Page -> Element.Element MainContentStyle.Styles variation msg
+toLink page =
+    Element.link page.link (Element.el MainContentStyle.None [] (Element.text page.content))

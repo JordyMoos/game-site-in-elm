@@ -4,7 +4,7 @@ module Module.Paginator.Paginator exposing (Config, Page, paginator)
 type alias Config =
     { currentPage : Int
     , totalPages : Int
-    , pagesAroundActive : Int
+    , pagesAroundCurrent : Int
     , linkStrategy : Int -> String
     }
 
@@ -12,7 +12,7 @@ type alias Config =
 type alias Page =
     { content : String
     , link : String
-    , isActive : Bool
+    , isCurrent : Bool
     }
 
 
@@ -25,10 +25,10 @@ doPaginator : Config -> List Page
 doPaginator config =
     let
         from =
-            max 1 (config.currentPage - config.pagesAroundActive)
+            max 1 (config.currentPage - config.pagesAroundCurrent)
 
         to =
-            min config.totalPages (config.currentPage + config.pagesAroundActive)
+            min config.totalPages (config.currentPage + config.pagesAroundCurrent)
 
         pages =
             List.map (createPage config) (List.range from to)
@@ -40,12 +40,12 @@ createPage : Config -> Int -> Page
 createPage config number =
     { content = toString number
     , link = config.linkStrategy number
-    , isActive = False
+    , isCurrent = config.currentPage == number
     }
 
 
 validate : Config -> Config
 validate config =
     { config
-        | pagesAroundActive = max 1 config.pagesAroundActive
+        | pagesAroundCurrent = max 1 config.pagesAroundCurrent
     }
