@@ -9,6 +9,8 @@ import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
 import Element
 import Element.Attributes as Attributes
+import Maybe.Extra
+import Module.Paginator.Paginator as Paginator
 
 
 type alias Model =
@@ -25,7 +27,9 @@ view model =
         (Element.column MainContentStyle.None
             []
             [ Element.h1 MainContentStyle.Title [] (Element.text (model.itemCollection.title ++ " Games"))
+            , paginationView model.pagination
             , itemsView model.items
+            , paginationView model.pagination
             ]
         )
         (Sidebar.view model.itemCollections)
@@ -52,3 +56,32 @@ itemView item =
             }
         , Element.el MainContentStyle.None [] (Element.text (item.since ++ " ago"))
         ]
+
+
+paginationView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
+paginationView pagination =
+    Element.column
+        MainContentStyle.None
+        []
+        [ paginationTextView pagination
+        , paginationButtonsContainerView pagination
+        ]
+
+
+paginationTextView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
+paginationTextView pagination =
+    Element.el
+        MainContentStyle.None
+        []
+        (Element.text <| Pagination.message pagination)
+
+
+paginationButtonsContainerView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
+paginationButtonsContainerView pagination =
+    Element.navigation
+        MainContentStyle.None
+        []
+        { name = "Pagination"
+        , options =
+            []
+        }

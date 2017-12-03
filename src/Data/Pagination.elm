@@ -19,6 +19,31 @@ empty =
     }
 
 
+message : Pagination -> String
+message pagination =
+    let
+        fromString =
+            toString <| from pagination
+
+        tillString =
+            toString <| till pagination
+
+        totalString =
+            toString pagination.total
+    in
+        fromString ++ " - " ++ tillString ++ " of " ++ totalString
+
+
+from : Pagination -> Int
+from { page, perPage } =
+    (page - 1) * perPage + 1
+
+
+till : Pagination -> Int
+till { page, perPage } =
+    page * perPage
+
+
 decoder : Decoder Pagination
 decoder =
     decode Pagination
