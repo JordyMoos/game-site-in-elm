@@ -26,7 +26,7 @@ view model =
     WithSidebarLayout.view
         (Element.column MainContentStyle.None
             []
-            [ Element.h1 MainContentStyle.None [] (Element.text "Popular Game Categories")
+            [ Element.h1 MainContentStyle.Title [] (Element.text "Popular Game Categories")
             , Element.el
                 MainContentStyle.None
                 []

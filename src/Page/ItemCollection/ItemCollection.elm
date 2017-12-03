@@ -24,7 +24,7 @@ view model =
     WithSidebarLayout.view
         (Element.column MainContentStyle.None
             []
-            [ Element.h1 MainContentStyle.None [] (Element.text (model.itemCollection.title ++ " games"))
+            [ Element.h1 MainContentStyle.Title [] (Element.text (model.itemCollection.title ++ " Games"))
             , itemsView model.items
             ]
         )
