@@ -7,6 +7,7 @@ import View.Layout.WithSidebar as WithSidebarLayout
 import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
 import Element
+import Element.Attributes as Attributes
 
 
 type alias Model =
@@ -26,7 +27,10 @@ view model =
         (Element.column MainContentStyle.None
             []
             [ Element.h1 MainContentStyle.None [] (Element.text "Popular Game Categories")
-            , Element.el MainContentStyle.None [] (itemCollectionPreviewsView model.itemCollectionPreviews)
+            , Element.el
+                MainContentStyle.None
+                []
+                (itemCollectionPreviewsView model.itemCollectionPreviews)
             ]
         )
         (Sidebar.view model.itemCollections)
@@ -46,10 +50,10 @@ itemCollectionPreviewView :
     -> Element.Element MainContentStyle.Styles variation msg
 itemCollectionPreviewView itemCollectionPreview =
     Element.column MainContentStyle.None
-        []
-        [ Element.el MainContentStyle.None [] (Element.text itemCollectionPreview.title)
+        [ Attributes.center, Attributes.width Attributes.fill, Attributes.spacing 5 ]
+        [ Element.el MainContentStyle.None [ Attributes.alignLeft ] (Element.text itemCollectionPreview.title)
         , Element.image MainContentStyle.None
-            []
+            [ Attributes.alignLeft ]
             { src = itemCollectionPreview.image
             , caption = itemCollectionPreview.title
             }

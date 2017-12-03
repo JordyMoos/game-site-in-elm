@@ -5,8 +5,12 @@ import Style exposing (..)
 
 type Styles
     = None
+    | ItemCollectionPreviewContainer
 
 
 styles : List (Style Styles variation)
 styles =
-    [ style None [] ]
+    [ style None []
+    , style ItemCollectionPreviewContainer
+        []
+    ]
