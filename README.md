@@ -20,7 +20,13 @@ Run the dev env
 elm-app start
 ```
 
-Goto localhost:3000 in your browser.
+Goto `localhost:3000` in your browser.
 
 **Make sure you have some CORS ignoring tool**
 I use CORSe addon in firefox
+
+## Dependency
+
+It uses `elm-app` to start check it out here https://github.com/halfzebra/create-elm-app
+
+You can also use `elm-reactor`
