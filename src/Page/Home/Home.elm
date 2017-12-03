@@ -1,6 +1,6 @@
 module Page.Home.Home exposing (Model, init, view)
 
-import Html exposing (..)
+import Html
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
 import View.Layout.WithSidebar as WithSidebarLayout
@@ -20,8 +20,37 @@ init =
     Model [] []
 
 
-view : Model -> Html msg
+view : Model -> Html.Html msg
 view model =
     WithSidebarLayout.view
-        (Element.el MainContentStyle.None [] (Element.text "Home Page"))
+        (Element.column MainContentStyle.None
+            []
+            [ Element.h1 MainContentStyle.None [] (Element.text "Popular Game Categories")
+            , Element.el MainContentStyle.None [] (itemCollectionPreviewsView model.itemCollectionPreviews)
+            ]
+        )
         (Sidebar.view model.itemCollections)
+
+
+itemCollectionPreviewsView :
+    List ItemCollectionPreview.ItemCollectionPreview
+    -> Element.Element MainContentStyle.Styles variation msg
+itemCollectionPreviewsView itemCollectionPreviews =
+    Element.wrappedRow MainContentStyle.None
+        []
+        (List.map itemCollectionPreviewView itemCollectionPreviews)
+
+
+itemCollectionPreviewView :
+    ItemCollectionPreview.ItemCollectionPreview
+    -> Element.Element MainContentStyle.Styles variation msg
+itemCollectionPreviewView itemCollectionPreview =
+    Element.column MainContentStyle.None
+        []
+        [ Element.el MainContentStyle.None [] (Element.text itemCollectionPreview.title)
+        , Element.image MainContentStyle.None
+            []
+            { src = itemCollectionPreview.image
+            , caption = itemCollectionPreview.title
+            }
+        ]
