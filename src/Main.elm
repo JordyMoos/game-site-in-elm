@@ -205,17 +205,22 @@ getVisualPage pageState =
 
 view : Model -> Html Msg
 view model =
-    case model.pageState of
-        Loaded page ->
-            viewPage page
-                |> viewWrapContent
-
-        Transitioning oldPage transitionData ->
-            viewPage oldPage
-                |> viewWrapContent
+    Html.div
+        []
+        [ Html.text "message"
+        , Html.node "paper-input" [] []
+        ]
 
 
 
+--    case model.pageState of
+--        Loaded page ->
+--            viewPage page
+--                |> viewWrapContent
+--
+--        Transitioning oldPage transitionData ->
+--            viewPage oldPage
+--                |> viewWrapContent
 -- @todo add loading
 --                |> viewLoading
 
