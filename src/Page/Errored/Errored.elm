@@ -1,23 +1,22 @@
 module Page.Errored.Errored exposing (Model, view)
 
-import Html exposing (Html)
 import Element
-import View.MainContentStyle as MainContentStyle
-import View.Layout.Plain as PlainLayout
+import View.Layout as Layout
+import View.Component.Main as Main
 
 
 type alias Model =
     String
 
 
-view : Model -> Html msg
+view : Model -> Element.Element Layout.Styles variation msg
 view model =
-    PlainLayout.view
-        (Element.column MainContentStyle.None
+    Layout.plainLayout
+        (Element.column Main.None
             []
-            [ Element.h1 MainContentStyle.Title [] (Element.text "Errored Page")
+            [ Element.h1 Main.Title [] (Element.text "Errored Page")
             , Element.el
-                MainContentStyle.None
+                Main.None
                 []
                 (Element.text model)
             ]

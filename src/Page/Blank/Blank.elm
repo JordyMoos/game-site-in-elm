@@ -1,14 +1,12 @@
 module Page.Blank.Blank exposing (..)
 
-import Html
-import View.Layout.WithSidebar as WithSidebarLayout
+import View.Layout as Layout
 import Element
-import View.MainContentStyle as MainContentStyle
 import View.Component.Sidebar as Sidebar
 
 
-view : Html.Html msg
+view : Element.Element Layout.Styles variation msg
 view =
-    WithSidebarLayout.view
+    Layout.withSidebarLayout
         Element.empty
         (Sidebar.view [])

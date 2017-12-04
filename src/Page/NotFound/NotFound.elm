@@ -1,16 +1,15 @@
 module Page.NotFound.NotFound exposing (view)
 
-import Html exposing (Html)
 import Element
-import View.MainContentStyle as MainContentStyle
-import View.Layout.Plain as PlainLayout
+import View.Component.Main as Main
+import View.Layout as Layout
 
 
-view : Html msg
+view : Element.Element Layout.Styles variation msg
 view =
-    PlainLayout.view
+    Layout.plainLayout
         (Element.h1
-            MainContentStyle.Title
+            Main.Title
             []
             (Element.text "Not Found")
         )

@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (..)
+import Html exposing (Html)
 import Routing
 import Page.NotFound.NotFound as NotFound
 import Page.Blank.Blank as Blank
@@ -12,6 +12,15 @@ import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
 import Data.TransitionStatus as TransitionStatus
 import Navigation
+import Element
+import Style
+import View.Component.Header as Header
+import View.Component.Navbar as Navbar
+import View.Component.Footer as Footer
+import View.Component.Main as Main
+import View.Layout as Layout
+import Style.Sheet as Sheet
+import Util.Util exposing (keepMsg, keepVariation)
 
 
 type Page
@@ -199,13 +208,19 @@ view model =
     case model.pageState of
         Loaded page ->
             viewPage page
+                |> viewWrapContent
 
         Transitioning oldPage transitionData ->
             viewPage oldPage
-                |> viewLoading
+                |> viewWrapContent
 
 
-viewPage : Page -> Html Msg
+
+-- @todo add loading
+--                |> viewLoading
+
+
+viewPage : Page -> Element.Element Layout.Styles variation msg
 viewPage page =
     case page of
         BlankPage ->
@@ -227,13 +242,40 @@ viewPage page =
             UserAgreement.view
 
 
+type Styles
+    = None
+    | HeaderStyles Header.Styles
+    | NavbarStyles Navbar.Styles
+    | FooterStyles Footer.Styles
+    | ContentStyles Layout.Styles
 
--- This should add the delayed loading bar
 
-
-viewLoading : Html Msg -> Html Msg
-viewLoading content =
-    div
-        []
-        [ content
+styleSheet : Style.StyleSheet Styles variation
+styleSheet =
+    Style.styleSheet
+        [ Style.style None []
+        , Sheet.map HeaderStyles keepVariation Header.styles |> Sheet.merge
+        , Sheet.map NavbarStyles keepVariation Navbar.styles |> Sheet.merge
+        , Sheet.map FooterStyles keepVariation Footer.styles |> Sheet.merge
+        , Sheet.map ContentStyles keepVariation Layout.styles |> Sheet.merge
         ]
+
+
+viewWrapContent : Element.Element Layout.Styles variation msg -> Html msg
+viewWrapContent content =
+    Element.layout styleSheet <|
+        Element.column
+            None
+            []
+            [ Element.mapAll keepMsg HeaderStyles keepVariation Header.view
+            , Element.mapAll keepMsg NavbarStyles keepVariation Navbar.view
+            , Element.mainContent None [] (Element.mapAll keepMsg ContentStyles keepVariation content)
+            , Element.mapAll keepMsg FooterStyles keepVariation Footer.view
+            ]
+
+
+
+-- This should add the delayed loading bar, cool to do with web components
+--viewLoading : Element.Element Styles variation msg -> Element.Element Styles variation msg
+--viewLoading content =
+--    content

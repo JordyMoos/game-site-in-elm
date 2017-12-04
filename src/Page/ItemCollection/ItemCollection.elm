@@ -1,11 +1,10 @@
 module Page.ItemCollection.ItemCollection exposing (Model, view)
 
-import Html
 import Data.ItemCollection as ItemCollection
 import Data.Item as Item
 import Data.Pagination as Pagination
-import View.Layout.WithSidebar as WithSidebarLayout
-import View.MainContentStyle as MainContentStyle
+import View.Layout as Layout
+import View.Component.Main as Main
 import View.Component.Sidebar as Sidebar
 import Element
 import Element.Attributes as Attributes
@@ -20,12 +19,12 @@ type alias Model =
     }
 
 
-view : Model -> Html.Html msg
+view : Model -> Element.Element Layout.Styles variation msg
 view model =
-    WithSidebarLayout.view
-        (Element.column MainContentStyle.None
+    Layout.withSidebarLayout
+        (Element.column Main.None
             []
-            [ Element.h1 MainContentStyle.Title [] (Element.text (model.itemCollection.title ++ " Games"))
+            [ Element.h1 Main.Title [] (Element.text (model.itemCollection.title ++ " Games"))
             , paginationView model.pagination model.itemCollection
             , itemsView model.items
             , paginationView model.pagination model.itemCollection
@@ -34,46 +33,46 @@ view model =
         (Sidebar.view model.itemCollections)
 
 
-itemsView : List Item.Item -> Element.Element MainContentStyle.Styles variation msg
+itemsView : List Item.Item -> Element.Element Main.Styles variation msg
 itemsView items =
     Element.wrappedRow
-        MainContentStyle.None
+        Main.None
         [ Attributes.spacing 5 ]
         (List.map itemView items)
 
 
-itemView : Item.Item -> Element.Element MainContentStyle.Styles variation msg
+itemView : Item.Item -> Element.Element Main.Styles variation msg
 itemView item =
     Element.column
-        MainContentStyle.None
+        Main.None
         []
-        [ Element.el MainContentStyle.None [] (Element.text item.title)
-        , Element.image MainContentStyle.None
+        [ Element.el Main.None [] (Element.text item.title)
+        , Element.image Main.None
             []
             { src = item.image
             , caption = item.title
             }
-        , Element.el MainContentStyle.None [] (Element.text (item.since ++ " ago"))
+        , Element.el Main.None [] (Element.text (item.since ++ " ago"))
         ]
 
 
 paginationView :
     Pagination.Pagination
     -> ItemCollection.ItemCollection
-    -> Element.Element MainContentStyle.Styles variation msg
+    -> Element.Element Main.Styles variation msg
 paginationView pagination itemCollection =
     Element.column
-        MainContentStyle.None
+        Main.None
         []
         [ paginationTextView pagination
         , paginationButtonsContainerView pagination itemCollection
         ]
 
 
-paginationTextView : Pagination.Pagination -> Element.Element MainContentStyle.Styles variation msg
+paginationTextView : Pagination.Pagination -> Element.Element Main.Styles variation msg
 paginationTextView pagination =
     Element.el
-        MainContentStyle.None
+        Main.None
         []
         (Element.text <| Pagination.message pagination)
 
@@ -81,10 +80,10 @@ paginationTextView pagination =
 paginationButtonsContainerView :
     Pagination.Pagination
     -> ItemCollection.ItemCollection
-    -> Element.Element MainContentStyle.Styles variation msg
+    -> Element.Element Main.Styles variation msg
 paginationButtonsContainerView pagination itemCollection =
     Element.navigation
-        MainContentStyle.None
+        Main.None
         []
         { name = "Pagination"
         , options =
@@ -106,6 +105,6 @@ paginationButtonsContainerView pagination itemCollection =
         }
 
 
-toLink : Paginator.Page -> Element.Element MainContentStyle.Styles variation msg
+toLink : Paginator.Page -> Element.Element Main.Styles variation msg
 toLink page =
-    Element.link page.link (Element.el MainContentStyle.None [] (Element.text page.content))
+    Element.link page.link (Element.el Main.None [] (Element.text page.content))

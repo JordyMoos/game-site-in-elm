@@ -1,4 +1,4 @@
-module View.MainContentStyle exposing (Styles(..), styles)
+module View.Component.Main exposing (Styles(..), styles)
 
 import Style exposing (..)
 import Color

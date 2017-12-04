@@ -1,11 +1,10 @@
 module Page.Home.Home exposing (Model, view)
 
-import Html
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
-import View.Layout.WithSidebar as WithSidebarLayout
-import View.MainContentStyle as MainContentStyle
+import View.Component.Main as Main
 import View.Component.Sidebar as Sidebar
+import View.Layout as Layout
 import Element
 import Element.Attributes as Attributes
 
@@ -16,14 +15,14 @@ type alias Model =
     }
 
 
-view : Model -> Html.Html msg
+view : Model -> Element.Element Layout.Styles variation msg
 view model =
-    WithSidebarLayout.view
-        (Element.column MainContentStyle.None
+    Layout.withSidebarLayout
+        (Element.column Main.None
             []
-            [ Element.h1 MainContentStyle.Title [] (Element.text "Popular Game Categories")
+            [ Element.h1 Main.Title [] (Element.text "Popular Game Categories")
             , Element.el
-                MainContentStyle.None
+                Main.None
                 []
                 (itemCollectionPreviewsView model.itemCollectionPreviews)
             ]
@@ -33,21 +32,21 @@ view model =
 
 itemCollectionPreviewsView :
     List ItemCollectionPreview.ItemCollectionPreview
-    -> Element.Element MainContentStyle.Styles variation msg
+    -> Element.Element Main.Styles variation msg
 itemCollectionPreviewsView itemCollectionPreviews =
-    Element.wrappedRow MainContentStyle.None
+    Element.wrappedRow Main.None
         []
         (List.map itemCollectionPreviewView itemCollectionPreviews)
 
 
 itemCollectionPreviewView :
     ItemCollectionPreview.ItemCollectionPreview
-    -> Element.Element MainContentStyle.Styles variation msg
+    -> Element.Element Main.Styles variation msg
 itemCollectionPreviewView itemCollectionPreview =
-    Element.column MainContentStyle.None
+    Element.column Main.None
         [ Attributes.center, Attributes.width Attributes.fill, Attributes.spacing 5 ]
-        [ Element.el MainContentStyle.None [ Attributes.alignLeft ] (Element.text itemCollectionPreview.title)
-        , Element.image MainContentStyle.None
+        [ Element.el Main.None [ Attributes.alignLeft ] (Element.text itemCollectionPreview.title)
+        , Element.image Main.None
             [ Attributes.alignLeft ]
             { src = itemCollectionPreview.image
             , caption = itemCollectionPreview.title
