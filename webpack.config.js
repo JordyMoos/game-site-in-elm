@@ -55,7 +55,12 @@ module.exports = {
     compress: true,
     hot: true,
     contentBase: path.resolve(__dirname, 'dist'),
-    stats: 'errors-only'
+    stats: 'errors-only',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000'
+      }
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
