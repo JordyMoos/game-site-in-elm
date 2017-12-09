@@ -15,18 +15,15 @@ git clone git@github.com:JordyMoos/gameemperor-in-elm.git
 cd gameemperor-in-elm
 ```
 
-Run the dev env
+Install dependencies
 ```
-elm-app start
+bower install
+yarn install
 ```
 
-Goto `localhost:3000` in your browser.
+Run the app
+```
+yarn dev
+```
 
-**Make sure you have some CORS ignoring tool**
-I use CORSe addon in firefox
-
-## Dependency
-
-It uses `elm-app` to start check it out here https://github.com/halfzebra/create-elm-app
-
-You can also use `elm-reactor`
+Goto `localhost:8080` in your browser.
