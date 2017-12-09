@@ -1,7 +1,6 @@
-import './main.css';
-import { Main } from './Main.elm';
-import registerServiceWorker from './registerServiceWorker';
+const Elm = require('./elm/Main.elm');
+// import registerServiceWorker from './registerServiceWorker';
 
-Main.embed(document.getElementById('root'));
+let app = Elm.Main.fullscreen();
 
-registerServiceWorker();
+// registerServiceWorker();

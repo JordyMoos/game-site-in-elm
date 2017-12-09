@@ -1,0 +1,25 @@
+{
+  "name": "gameemperor-in-elm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com:JordyMoos/gameemperor-in-elm.git",
+  "author": "Jordy Moos",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "copy-webpack-plugin": "^4.2.3",
+    "elm-hot-loader": "^0.5.4",
+    "elm-webpack-loader": "^4.4.0",
+    "html-webpack-plugin": "^2.30.1",
+    "polymer-webpack-loader": "^2.0.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7"
+  },
+  "scripts": {
+    "dev": "./node_modules/.bin/webpack-dev-server",
+    "dev:build": "./node_modules/.bin/webpack -d"
+  }
+}

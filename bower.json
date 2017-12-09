@@ -1,0 +1,20 @@
+{
+  "name": "gameemperor-in-elm",
+  "description": "",
+  "main": "./src/index.js",
+  "authors": [
+    "Jordy Moos"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/JordyMoos/gameemperor-in-elm",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "paper-input": "PolymerElements/paper-input#^2.0.5"
+  }
+}
