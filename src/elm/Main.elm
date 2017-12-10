@@ -21,6 +21,7 @@ import View.Component.Main as Main
 import View.Layout as Layout
 import Style.Sheet as Sheet
 import Util.Util exposing (keepMsg, keepVariation)
+import Data.Search as Search
 
 
 type Page
@@ -44,6 +45,7 @@ type PageState
 
 type alias Model =
     { pageState : PageState
+    , search : Search.Search
     }
 
 
@@ -54,7 +56,9 @@ init location =
 
 initModel : Model
 initModel =
-    { pageState = Loaded BlankPage }
+    { pageState = Loaded BlankPage
+    , search = Search.empty
+    }
 
 
 main : Program Never Model Msg
@@ -72,6 +76,7 @@ type Msg
     | ChangeLocation Navigation.Location
     | LoadingHomeMsg LoadingHome.Msg
     | LoadingItemCollectionMsg LoadingItemCollection.Msg
+    | OnSearchInput String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -147,6 +152,9 @@ update msg model =
             in
                 ( newModel, newCmd )
 
+        ( OnSearchInput input, _ ) ->
+            { model | search = Search.withInput model.search input } ! []
+
         ( NoOp, _ ) ->
             ( model, Cmd.none )
 
@@ -208,11 +216,11 @@ view model =
     case model.pageState of
         Loaded page ->
             viewPage page
-                |> viewWrapContent
+                |> viewWrapContent model.search
 
         Transitioning oldPage transitionData ->
             viewPage oldPage
-                |> viewWrapContent
+                |> viewWrapContent model.search
 
 
 
@@ -261,13 +269,13 @@ styleSheet =
         ]
 
 
-viewWrapContent : Element.Element Layout.Styles variation msg -> Html msg
-viewWrapContent content =
+viewWrapContent : Search.Search -> Element.Element Layout.Styles variation msg -> Html msg
+viewWrapContent search content =
     Element.layout styleSheet <|
         Element.column
             None
             []
-            [ Element.mapAll keepMsg HeaderStyles keepVariation Header.view
+            [ Element.mapAll keepMsg HeaderStyles keepVariation (Header.view search)
             , Element.mapAll keepMsg NavbarStyles keepVariation Navbar.view
             , Element.mainContent None [] (Element.mapAll keepMsg ContentStyles keepVariation content)
             , Element.mapAll keepMsg FooterStyles keepVariation Footer.view
