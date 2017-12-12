@@ -5,6 +5,8 @@ import Element.Attributes exposing (..)
 import Style exposing (..)
 import Color
 import Style.Color as Color
+import Style.Border as Border
+import View.Component.Search as Search
 
 
 type Styles
@@ -19,7 +21,9 @@ styles =
     , style Header
         [ Color.background (Color.rgb 178 30 3) ]
     , style SearchBox
-        [ Color.background Color.white ]
+        [ Color.background Color.white
+        , Border.rounded 3
+        ]
     ]
 
 
@@ -29,23 +33,10 @@ view =
         Header
         [ height <| px 75 ]
         (row None
-            []
-            [ text "Header here"
-            , node "paper-autocomplete"
-                (el SearchBox
-                    [ attribute "id" "searchInput"
-                    , attribute "label" "Search ..."
-                    , attribute "no-label-float" "no-label-float"
-                    ]
-                    (node "paper-icon-button"
-                        (el None
-                            [ attribute "slot" "suffix"
-                            , attribute "suffix" "suffix"
-                            , attribute "icon" "search"
-                            ]
-                            empty
-                        )
-                    )
-                )
+            [ alignRight, width fill, paddingTop 15, paddingRight 30 ]
+            [ el
+                SearchBox
+                [ paddingXY 10 2, width (px 300) ]
+                (html Search.viewSearch)
             ]
         )
