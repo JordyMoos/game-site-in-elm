@@ -57,7 +57,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, 'dist'),
     stats: 'errors-only',
     host: '::',
-    public: '127.0.0.1:8888',
+    public: '[::1]:8888',
     port: 8888,
     proxy: {
       '/api': {
