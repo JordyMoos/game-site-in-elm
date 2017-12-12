@@ -56,17 +56,16 @@ module.exports = {
     hot: true,
     contentBase: path.resolve(__dirname, 'dist'),
     stats: 'errors-only',
+    host: '::',
+    public: '127.0.0.1:8888',
+    port: 8888,
     proxy: {
       '/api': {
-        target: {
-          host: 'localhost',
-          protocol: 'http:',
-          port: 5000
-        },
-        changeOrigin: true,
-        secure: false
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true
       }
-    }
+    },
+    open: true
   },
   plugins: [
     new HtmlWebpackPlugin({
