@@ -19,7 +19,7 @@
     "webpack-dev-server": "^2.9.7"
   },
   "scripts": {
-    "dev": "./node_modules/.bin/webpack-dev-server",
+    "dev": "./node_modules/.bin/webpack-dev-server --host 0.0.0.0 --port 8888",
     "dev:build": "./node_modules/.bin/webpack -d"
   }
 }

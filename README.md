@@ -26,4 +26,4 @@ Run the app
 yarn dev
 ```
 
-Goto `localhost:8080` in your browser.
+Goto `localhost:8888` in your browser.
