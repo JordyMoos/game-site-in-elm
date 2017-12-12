@@ -3,16 +3,16 @@
 
 # Setup a local api
 
-See: https://github.com/JordyMoos/gameemperor-api
+See: https://github.com/JordyMoos/game-site-api
 
 # Run this
 
 Clone this
 ```
-git clone git@github.com:JordyMoos/gameemperor-in-elm.git
+git clone https://github.com/JordyMoos/game-site-in-elm.git
 ```
 ```
-cd gameemperor-in-elm
+cd game-site-in-elm
 ```
 
 Install dependencies
