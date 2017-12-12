@@ -58,7 +58,13 @@ module.exports = {
     stats: 'errors-only',
     proxy: {
       '/api': {
-        target: 'http://localhost:5000'
+        target: {
+          host: 'localhost',
+          protocol: 'http:',
+          port: 5000
+        },
+        changeOrigin: true,
+        secure: false
       }
     }
   },
