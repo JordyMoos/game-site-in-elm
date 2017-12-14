@@ -58,7 +58,7 @@ asTransitionStatus :
     ( Model, Cmd Msg )
     -> TransitionStatus Model Msg ItemCollectionPage.Model
 asTransitionStatus ( model, cmd ) =
-    PageLoader.defaultListTransitionHandler
+    PageLoader.defaultDependencyStatusListHandler
         ( model, cmd )
         (dependencyStatuses model)
         (\() ->
