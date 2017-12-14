@@ -11,6 +11,8 @@ viewSearch =
         [ id "searchInput"
         , attribute "label" "Search ..."
         , attribute "no-label-float" "no-label-float"
+        , attribute "maxlength" "100"
+        , attribute "remote-source" "remote-source"
         ]
         [ node "paper-icon-button"
             [ attribute "slot" "suffix"
