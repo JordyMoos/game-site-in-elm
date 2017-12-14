@@ -10,7 +10,7 @@ import Page.Home.Home as Home
 import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
 import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
-import PageLoader.PageLoader as PageLoader
+import PageLoader.PageLoader as PageLoader exposing (PageState(Loaded, Transitioning))
 import Navigation
 import Element
 import Style
@@ -37,13 +37,8 @@ type Loading
     | LoadingItemCollection LoadingItemCollection.Model
 
 
-type PageState
-    = Loaded Page
-    | Transitioning Page Loading
-
-
 type alias Model =
-    { pageState : PageState
+    { pageState : PageState Page Loading
     }
 
 
@@ -167,7 +162,7 @@ setRoute maybeRoute model =
         Just Routing.Home ->
             let
                 oldPage =
-                    getVisualPage model.pageState
+                    PageLoader.visualPage model.pageState
 
                 ( newModel, newCmd ) =
                     LoadingHome.init
@@ -178,7 +173,7 @@ setRoute maybeRoute model =
         Just (Routing.ItemCollection slug page) ->
             let
                 oldPage =
-                    getVisualPage model.pageState
+                    PageLoader.visualPage model.pageState
 
                 ( newModel, newCmd ) =
                     LoadingItemCollection.init slug page
@@ -191,16 +186,6 @@ setRoute maybeRoute model =
 
         Just Routing.UserAgreement ->
             { model | pageState = Loaded UserAgreementPage } ! []
-
-
-getVisualPage : PageState -> Page
-getVisualPage pageState =
-    case pageState of
-        Loaded page ->
-            page
-
-        Transitioning page _ ->
-            page
 
 
 view : Model -> Html Msg

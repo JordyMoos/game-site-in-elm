@@ -58,24 +58,20 @@ asTransitionStatus :
     ( Model, Cmd Msg )
     -> TransitionStatus Model Msg ItemCollectionPage.Model
 asTransitionStatus ( model, cmd ) =
-    case DependencyStatus.combine (dependencyStatuses model) of
-        DependencyStatus.Failed ->
-            Failed "Some requests failed"
-
-        DependencyStatus.Success ->
+    PageLoader.defaultListTransitionHandler
+        ( model, cmd )
+        (dependencyStatuses model)
+        (\() ->
             let
                 itemSearchResult =
                     RemoteData.withDefault ItemSearchResult.empty model.itemSearchResult
             in
-                Success
-                    { itemCollections = RemoteData.withDefault [] model.itemCollections
-                    , itemCollection = RemoteData.withDefault ItemCollection.empty model.itemCollection
-                    , items = itemSearchResult.items
-                    , pagination = itemSearchResult.pagination
-                    }
-
-        DependencyStatus.Pending progressions ->
-            Pending ( model, cmd ) progressions
+                { itemCollections = RemoteData.withDefault [] model.itemCollections
+                , itemCollection = RemoteData.withDefault ItemCollection.empty model.itemCollection
+                , items = itemSearchResult.items
+                , pagination = itemSearchResult.pagination
+                }
+        )
 
 
 dependencyStatuses : Model -> List DependencyStatus.Status
