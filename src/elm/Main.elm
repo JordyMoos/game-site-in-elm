@@ -10,7 +10,7 @@ import Page.Home.Home as Home
 import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
 import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
-import Data.TransitionStatus as TransitionStatus
+import PageLoader.PageLoader as PageLoader
 import Navigation
 import Element
 import Style
@@ -94,7 +94,7 @@ update msg model =
 
                 ( newModel, newCmd ) =
                     case transitionStatus of
-                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
+                        PageLoader.Pending ( resultModel, resultCmd ) progression ->
                             { model
                                 | pageState =
                                     Transitioning
@@ -103,13 +103,13 @@ update msg model =
                             }
                                 ! [ Cmd.map LoadingHomeMsg resultCmd ]
 
-                        TransitionStatus.Success data ->
+                        PageLoader.Success data ->
                             { model
                                 | pageState = Loaded (HomePage data)
                             }
                                 ! []
 
-                        TransitionStatus.Failed error ->
+                        PageLoader.Failed error ->
                             { model
                                 | pageState = Loaded (ErroredPage error)
                             }
@@ -124,7 +124,7 @@ update msg model =
 
                 ( newModel, newCmd ) =
                     case transitionStatus of
-                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
+                        PageLoader.Pending ( resultModel, resultCmd ) progression ->
                             { model
                                 | pageState =
                                     Transitioning
@@ -133,13 +133,13 @@ update msg model =
                             }
                                 ! [ Cmd.map LoadingItemCollectionMsg resultCmd ]
 
-                        TransitionStatus.Success data ->
+                        PageLoader.Success data ->
                             { model
                                 | pageState = Loaded (ItemCollectionPage data)
                             }
                                 ! []
 
-                        TransitionStatus.Failed error ->
+                        PageLoader.Failed error ->
                             { model
                                 | pageState = Loaded (ErroredPage error)
                             }

@@ -2,12 +2,13 @@ module Page.Home.LoadingHome exposing (Model, Msg(..), init, update)
 
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
-import Data.TransitionStatus as TransitionStatus
 import Request.ItemCollection as ItemCollectionRequest
 import Request.ItemCollectionPreview as ItemCollectionPreviewRequest
 import RemoteData exposing (WebData)
-import Util.RemoteDataExt.Status as RemoteDataStatus
 import Page.Home.Home as Home
+import PageLoader.PageLoader as PageLoader exposing (TransitionStatus(Pending, Success, Failed))
+import PageLoader.DependencyStatus.DependencyStatus as DependencyStatus
+import PageLoader.DependencyStatus.RemoteDataExt as RemoteDataExt
 
 
 type alias Model =
@@ -23,94 +24,48 @@ type Msg
 
 init : ( Model, Cmd Msg )
 init =
-    { itemCollections = RemoteData.NotAsked
-    , itemCollectionPreviews = RemoteData.NotAsked
+    { itemCollections = RemoteData.Loading
+    , itemCollectionPreviews = RemoteData.Loading
     }
-        ! []
-        |> requestData
+        ! [ ItemCollectionRequest.list ItemCollectionsResponse
+          , ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
+          ]
 
 
-requestData : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-requestData ( model, cmd ) =
-    let
-        itemCollectionsCmd =
-            ItemCollectionRequest.list ItemCollectionsResponse
-
-        itemCollectionPreviewsCmd =
-            ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
-    in
-        { model
-            | itemCollections = RemoteData.Loading
-            , itemCollectionPreviews = RemoteData.Loading
-        }
-            ! [ itemCollectionsCmd, itemCollectionPreviewsCmd, cmd ]
-
-
-update : Msg -> Model -> TransitionStatus.TransitionStatus Model Msg Home.Model
+update : Msg -> Model -> TransitionStatus Model Msg Home.Model
 update msg model =
-    let
-        ( newModel, newCmd ) =
-            case msg of
-                ItemCollectionsResponse response ->
-                    { model | itemCollections = response } ! []
+    asTransitionStatus <|
+        case msg of
+            ItemCollectionsResponse response ->
+                { model | itemCollections = response } ! []
 
-                ItemCollectionPreviewsResponse response ->
-                    { model | itemCollectionPreviews = response } ! []
-    in
-        asTransitionStatus ( newModel, newCmd )
+            ItemCollectionPreviewsResponse response ->
+                { model | itemCollectionPreviews = response }
+                    ! []
 
 
 asTransitionStatus :
     ( Model, Cmd Msg )
-    -> TransitionStatus.TransitionStatus Model Msg Home.Model
+    -> TransitionStatus Model Msg Home.Model
 asTransitionStatus ( model, cmd ) =
-    let
-        isFailed =
-            hasFailedDependencies model
+    case DependencyStatus.combine (dependencyStatuses model) of
+        DependencyStatus.Failed ->
+            Failed "Some requests failed"
 
-        finishedCount =
-            getFinishedDependencyCount model
-
-        totalCount =
-            totalDependencyCount model
-
-        isFinished =
-            finishedCount == totalCount
-    in
-        if isFailed then
-            TransitionStatus.Failed "Some requests failed"
-        else if isFinished then
-            TransitionStatus.Success
+        DependencyStatus.Success ->
+            Success
                 { itemCollections = RemoteData.withDefault [] model.itemCollections
                 , itemCollectionPreviews = RemoteData.withDefault [] model.itemCollectionPreviews
                 }
-        else
-            TransitionStatus.Pending
+
+        DependencyStatus.Pending progression ->
+            Pending
                 ( model, cmd )
-                (TransitionStatus.Progression totalCount finishedCount)
+                progression
 
 
-dependencyStatuses : Model -> List RemoteDataStatus.Status
+dependencyStatuses : Model -> List DependencyStatus.Status
 dependencyStatuses model =
-    [ RemoteDataStatus.asStatus model.itemCollections
-    , RemoteDataStatus.asStatus model.itemCollectionPreviews
+    [ RemoteDataExt.asStatus model.itemCollections
+    , RemoteDataExt.asStatus model.itemCollectionPreviews
     ]
-
-
-totalDependencyCount : Model -> Int
-totalDependencyCount model =
-    dependencyStatuses model
-        |> List.length
-
-
-hasFailedDependencies : Model -> Bool
-hasFailedDependencies model =
-    dependencyStatuses model
-        |> List.any RemoteDataStatus.isFailed
-
-
-getFinishedDependencyCount : Model -> Int
-getFinishedDependencyCount model =
-    dependencyStatuses model
-        |> List.filter RemoteDataStatus.isSuccess
-        |> List.length
