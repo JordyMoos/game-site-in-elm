@@ -6,8 +6,8 @@ import Request.ItemCollection as ItemCollectionRequest
 import Request.ItemCollectionPreview as ItemCollectionPreviewRequest
 import RemoteData exposing (WebData)
 import Page.Home.Home as Home
-import PageLoader.PageLoader as PageLoader exposing (TransitionStatus(Pending, Success, Failed))
-import PageLoader.DependencyStatus.DependencyStatus as DependencyStatus
+import PageLoader exposing (TransitionStatus(Pending, Success, Failed))
+import PageLoader.DependencyStatus as DependencyStatus
 import PageLoader.DependencyStatus.RemoteDataExt as RemoteDataExt
 
 

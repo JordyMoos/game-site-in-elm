@@ -10,7 +10,7 @@ import Page.Home.Home as Home
 import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
 import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
-import PageLoader.PageLoader as PageLoader exposing (PageState(Loaded, Transitioning))
+import PageLoader exposing (PageState(Loaded, Transitioning))
 import Navigation
 import Element
 import Style
