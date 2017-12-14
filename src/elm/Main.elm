@@ -84,63 +84,29 @@ update msg model =
 
         ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel) ) ->
             let
-                transitionStatus =
-                    LoadingHome.update subMsg subModel
-
-                ( newModel, newCmd ) =
-                    case transitionStatus of
-                        PageLoader.Pending ( resultModel, resultCmd ) progression ->
-                            { model
-                                | pageState =
-                                    Transitioning
-                                        oldPage
-                                        (LoadingHome resultModel)
-                            }
-                                ! [ Cmd.map LoadingHomeMsg resultCmd ]
-
-                        PageLoader.Success data ->
-                            { model
-                                | pageState = Loaded (HomePage data)
-                            }
-                                ! []
-
-                        PageLoader.Failed error ->
-                            { model
-                                | pageState = Loaded (ErroredPage error)
-                            }
-                                ! []
+                ( newPageState, newCmd ) =
+                    PageLoader.defaultTransitionStatusHandler
+                        (LoadingHome.update subMsg subModel)
+                        oldPage
+                        LoadingHome
+                        LoadingHomeMsg
+                        HomePage
+                        ErroredPage
             in
-                ( newModel, newCmd )
+                ( { model | pageState = newPageState }, newCmd )
 
         ( LoadingItemCollectionMsg subMsg, Transitioning oldPage (LoadingItemCollection subModel) ) ->
             let
-                transitionStatus =
-                    LoadingItemCollection.update subMsg subModel
-
-                ( newModel, newCmd ) =
-                    case transitionStatus of
-                        PageLoader.Pending ( resultModel, resultCmd ) progression ->
-                            { model
-                                | pageState =
-                                    Transitioning
-                                        oldPage
-                                        (LoadingItemCollection resultModel)
-                            }
-                                ! [ Cmd.map LoadingItemCollectionMsg resultCmd ]
-
-                        PageLoader.Success data ->
-                            { model
-                                | pageState = Loaded (ItemCollectionPage data)
-                            }
-                                ! []
-
-                        PageLoader.Failed error ->
-                            { model
-                                | pageState = Loaded (ErroredPage error)
-                            }
-                                ! []
+                ( newPageState, newCmd ) =
+                    PageLoader.defaultTransitionStatusHandler
+                        (LoadingItemCollection.update subMsg subModel)
+                        oldPage
+                        LoadingItemCollection
+                        LoadingItemCollectionMsg
+                        ItemCollectionPage
+                        ErroredPage
             in
-                ( newModel, newCmd )
+                ( { model | pageState = newPageState }, newCmd )
 
         ( NoOp, _ ) ->
             ( model, Cmd.none )

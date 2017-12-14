@@ -3,8 +3,9 @@ module PageLoader.PageLoader
         ( PageState(..)
         , TransitionStatus(..)
         , visualPage
-        , defaultTransitionHandler
-        , defaultListTransitionHandler
+        , defaultDependencyStatusHandler
+        , defaultDependencyStatusListHandler
+        , defaultTransitionStatusHandler
         )
 
 import PageLoader.DependencyStatus.DependencyStatus as DependencyStatus
@@ -31,24 +32,24 @@ type TransitionStatus model msg data
     | Failed String
 
 
-defaultListTransitionHandler :
+defaultDependencyStatusListHandler :
     ( model, Cmd msg )
     -> List DependencyStatus.Status
     -> (() -> successData)
     -> TransitionStatus model msg successData
-defaultListTransitionHandler ( model, cmd ) dependencyStatuses onSuccessCallback =
-    defaultTransitionHandler
+defaultDependencyStatusListHandler ( model, cmd ) dependencyStatuses onSuccessCallback =
+    defaultDependencyStatusHandler
         ( model, cmd )
         (DependencyStatus.combine dependencyStatuses)
         onSuccessCallback
 
 
-defaultTransitionHandler :
+defaultDependencyStatusHandler :
     ( model, Cmd msg )
     -> DependencyStatus.Status
     -> (() -> successData)
     -> TransitionStatus model msg successData
-defaultTransitionHandler ( model, cmd ) dependencyStatus onSuccessCallback =
+defaultDependencyStatusHandler ( model, cmd ) dependencyStatus onSuccessCallback =
     case dependencyStatus of
         DependencyStatus.Failed ->
             Failed "Some requests failed"
@@ -58,3 +59,23 @@ defaultTransitionHandler ( model, cmd ) dependencyStatus onSuccessCallback =
 
         DependencyStatus.Success ->
             Success (onSuccessCallback ())
+
+
+defaultTransitionStatusHandler :
+    TransitionStatus loadingModel loadingMsg newData
+    -> page
+    -> (loadingModel -> loader)
+    -> (loadingMsg -> msg)
+    -> (newData -> page)
+    -> (String -> page)
+    -> ( PageState page loader, Cmd msg )
+defaultTransitionStatusHandler transitionStatus oldPage loader loadingMsgTagger newPage errorPage =
+    case transitionStatus of
+        Pending ( model, cmd ) progression ->
+            ( Transitioning oldPage (loader model), Cmd.map loadingMsgTagger cmd )
+
+        Success newData ->
+            ( Loaded (newPage newData), Cmd.none )
+
+        Failed error ->
+            ( Loaded (errorPage error), Cmd.none )
