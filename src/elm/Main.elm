@@ -10,7 +10,7 @@ import Page.Home.Home as Home
 import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
 import Page.ItemCollection.ItemCollection as ItemCollection
 import Page.UserAgreement.UserAgreement as UserAgreement
-import Data.TransitionStatus as TransitionStatus
+import PageLoader.PageLoader as PageLoader exposing (PageState(Loaded, Transitioning))
 import Navigation
 import Element
 import Style
@@ -37,13 +37,8 @@ type Loading
     | LoadingItemCollection LoadingItemCollection.Model
 
 
-type PageState
-    = Loaded Page
-    | Transitioning Page Loading
-
-
 type alias Model =
-    { pageState : PageState
+    { pageState : PageState Page Loading
     }
 
 
@@ -89,63 +84,29 @@ update msg model =
 
         ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel) ) ->
             let
-                transitionStatus =
-                    LoadingHome.update subMsg subModel
-
-                ( newModel, newCmd ) =
-                    case transitionStatus of
-                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
-                            { model
-                                | pageState =
-                                    Transitioning
-                                        oldPage
-                                        (LoadingHome resultModel)
-                            }
-                                ! [ Cmd.map LoadingHomeMsg resultCmd ]
-
-                        TransitionStatus.Success data ->
-                            { model
-                                | pageState = Loaded (HomePage data)
-                            }
-                                ! []
-
-                        TransitionStatus.Failed error ->
-                            { model
-                                | pageState = Loaded (ErroredPage error)
-                            }
-                                ! []
+                ( newPageState, newCmd ) =
+                    PageLoader.defaultTransitionStatusHandler
+                        (LoadingHome.update subMsg subModel)
+                        oldPage
+                        LoadingHome
+                        LoadingHomeMsg
+                        HomePage
+                        ErroredPage
             in
-                ( newModel, newCmd )
+                ( { model | pageState = newPageState }, newCmd )
 
         ( LoadingItemCollectionMsg subMsg, Transitioning oldPage (LoadingItemCollection subModel) ) ->
             let
-                transitionStatus =
-                    LoadingItemCollection.update subMsg subModel
-
-                ( newModel, newCmd ) =
-                    case transitionStatus of
-                        TransitionStatus.Pending ( resultModel, resultCmd ) progression ->
-                            { model
-                                | pageState =
-                                    Transitioning
-                                        oldPage
-                                        (LoadingItemCollection resultModel)
-                            }
-                                ! [ Cmd.map LoadingItemCollectionMsg resultCmd ]
-
-                        TransitionStatus.Success data ->
-                            { model
-                                | pageState = Loaded (ItemCollectionPage data)
-                            }
-                                ! []
-
-                        TransitionStatus.Failed error ->
-                            { model
-                                | pageState = Loaded (ErroredPage error)
-                            }
-                                ! []
+                ( newPageState, newCmd ) =
+                    PageLoader.defaultTransitionStatusHandler
+                        (LoadingItemCollection.update subMsg subModel)
+                        oldPage
+                        LoadingItemCollection
+                        LoadingItemCollectionMsg
+                        ItemCollectionPage
+                        ErroredPage
             in
-                ( newModel, newCmd )
+                ( { model | pageState = newPageState }, newCmd )
 
         ( NoOp, _ ) ->
             ( model, Cmd.none )
@@ -167,7 +128,7 @@ setRoute maybeRoute model =
         Just Routing.Home ->
             let
                 oldPage =
-                    getVisualPage model.pageState
+                    PageLoader.visualPage model.pageState
 
                 ( newModel, newCmd ) =
                     LoadingHome.init
@@ -178,7 +139,7 @@ setRoute maybeRoute model =
         Just (Routing.ItemCollection slug page) ->
             let
                 oldPage =
-                    getVisualPage model.pageState
+                    PageLoader.visualPage model.pageState
 
                 ( newModel, newCmd ) =
                     LoadingItemCollection.init slug page
@@ -191,16 +152,6 @@ setRoute maybeRoute model =
 
         Just Routing.UserAgreement ->
             { model | pageState = Loaded UserAgreementPage } ! []
-
-
-getVisualPage : PageState -> Page
-getVisualPage pageState =
-    case pageState of
-        Loaded page ->
-            page
-
-        Transitioning page _ ->
-            page
 
 
 view : Model -> Html Msg
