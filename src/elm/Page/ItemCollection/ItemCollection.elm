@@ -1,4 +1,4 @@
-module Page.ItemCollection.ItemCollection exposing (Model, view)
+module Page.ItemCollection.ItemCollection exposing (Model, init, view)
 
 import Data.ItemCollection as ItemCollection
 import Data.Item as Item
@@ -17,6 +17,11 @@ type alias Model =
     , items : List Item.Item
     , pagination : Pagination.Pagination
     }
+
+
+init : Model -> ( Model, Cmd msg )
+init model =
+    model ! []
 
 
 view : Model -> Element.Element Layout.Styles variation msg

@@ -1,4 +1,4 @@
-module Page.UserAgreement.UserAgreement exposing (view)
+module Page.UserAgreement exposing (view)
 
 import Element
 import View.Component.Main as Main

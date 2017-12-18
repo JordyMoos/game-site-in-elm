@@ -1,4 +1,4 @@
-module Page.Errored.Errored exposing (Model, view)
+module Page.Error exposing (Model, view)
 
 import Element
 import View.Layout as Layout

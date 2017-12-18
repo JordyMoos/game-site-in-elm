@@ -1,4 +1,4 @@
-module Page.Home.Home exposing (Model, view)
+module Page.Home.Home exposing (Model, init, view)
 
 import Data.ItemCollection as ItemCollection
 import Data.ItemCollectionPreview as ItemCollectionPreview
@@ -13,6 +13,11 @@ type alias Model =
     { itemCollections : List ItemCollection.ItemCollection
     , itemCollectionPreviews : List ItemCollectionPreview.ItemCollectionPreview
     }
+
+
+init : Model -> ( Model, Cmd msg )
+init model =
+    model ! []
 
 
 view : Model -> Element.Element Layout.Styles variation msg

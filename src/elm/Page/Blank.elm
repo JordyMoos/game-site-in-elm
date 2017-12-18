@@ -1,4 +1,4 @@
-module Page.Blank.Blank exposing (..)
+module Page.Blank exposing (view)
 
 import View.Layout as Layout
 import Element

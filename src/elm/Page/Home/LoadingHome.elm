@@ -22,14 +22,15 @@ type Msg
     | ItemCollectionPreviewsResponse (WebData (List ItemCollectionPreview.ItemCollectionPreview))
 
 
-init : ( Model, Cmd Msg )
+init : TransitionStatus Model Msg Home.Model
 init =
-    { itemCollections = RemoteData.Loading
-    , itemCollectionPreviews = RemoteData.Loading
-    }
-        ! [ ItemCollectionRequest.list ItemCollectionsResponse
-          , ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
-          ]
+    asTransitionStatus <|
+        { itemCollections = RemoteData.Loading
+        , itemCollectionPreviews = RemoteData.Loading
+        }
+            ! [ ItemCollectionRequest.list ItemCollectionsResponse
+              , ItemCollectionPreviewRequest.list ItemCollectionPreviewsResponse
+              ]
 
 
 update : Msg -> Model -> TransitionStatus Model Msg Home.Model

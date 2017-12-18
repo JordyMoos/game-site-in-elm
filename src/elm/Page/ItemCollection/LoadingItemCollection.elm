@@ -26,18 +26,19 @@ type Msg
     | ItemSearchResultResponse (WebData ItemSearchResult.ItemSearchResult)
 
 
-init : String -> Int -> ( Model, Cmd Msg )
+init : String -> Int -> TransitionStatus Model Msg ItemCollectionPage.Model
 init slug page =
-    { itemCollections = RemoteData.Loading
-    , itemCollection = RemoteData.Loading
-    , itemSearchResult = RemoteData.Loading
-    , slug = slug
-    , page = page
-    }
-        ! [ ItemCollectionRequest.list ItemCollectionsResponse
-          , ItemCollectionRequest.bySlug ItemCollectionResponse slug
-          , ItemRequest.searchForItemCollectionSlug ItemSearchResultResponse slug page
-          ]
+    asTransitionStatus <|
+        { itemCollections = RemoteData.Loading
+        , itemCollection = RemoteData.Loading
+        , itemSearchResult = RemoteData.Loading
+        , slug = slug
+        , page = page
+        }
+            ! [ ItemCollectionRequest.list ItemCollectionsResponse
+              , ItemCollectionRequest.bySlug ItemCollectionResponse slug
+              , ItemRequest.searchForItemCollectionSlug ItemSearchResultResponse slug page
+              ]
 
 
 update : Msg -> Model -> TransitionStatus Model Msg ItemCollectionPage.Model

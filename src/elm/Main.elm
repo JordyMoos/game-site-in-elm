@@ -2,15 +2,16 @@ module Main exposing (..)
 
 import Html exposing (Html)
 import Routing
-import Page.NotFound.NotFound as NotFound
-import Page.Blank.Blank as Blank
-import Page.Errored.Errored as Errored
+import Page.NotFound as NotFound
+import Page.Blank as Blank
+import Page.Error as Error
 import Page.Home.LoadingHome as LoadingHome
 import Page.Home.Home as Home
 import Page.ItemCollection.LoadingItemCollection as LoadingItemCollection
 import Page.ItemCollection.ItemCollection as ItemCollection
-import Page.UserAgreement.UserAgreement as UserAgreement
-import PageLoader exposing (PageState(Loaded, Transitioning))
+import Page.UserAgreement as UserAgreement
+import PageLoader exposing (PageState(Loaded, Transitioning), TransitionStatus(..))
+import PageLoader.Progression as Progression
 import Navigation
 import Element
 import Style
@@ -26,15 +27,15 @@ import Util.Util exposing (keepMsg, keepVariation)
 type Page
     = BlankPage
     | NotFoundPage
-    | ErroredPage Errored.Model
+    | ErrorPage Error.Model
     | HomePage Home.Model
     | UserAgreementPage
     | ItemCollectionPage ItemCollection.Model
 
 
 type Loading
-    = LoadingHome LoadingHome.Model
-    | LoadingItemCollection LoadingItemCollection.Model
+    = LoadingHome LoadingHome.Model Progression.Progression
+    | LoadingItemCollection LoadingItemCollection.Model Progression.Progression
 
 
 type alias Model =
@@ -73,85 +74,58 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( msg, model.pageState ) of
         ( ChangeLocation location, _ ) ->
-            let
-                newRoute =
-                    Routing.fromLocation location
+            setRoute (Routing.fromLocation location) model
 
-                _ =
-                    Debug.log "new route" (toString newRoute)
-            in
-                setRoute newRoute model
+        ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel _) ) ->
+            processLoadingHome oldPage (LoadingHome.update subMsg subModel)
+                |> updatePageState model
 
-        ( LoadingHomeMsg subMsg, Transitioning oldPage (LoadingHome subModel) ) ->
-            let
-                ( newPageState, newCmd ) =
-                    PageLoader.defaultTransitionStatusHandler
-                        (LoadingHome.update subMsg subModel)
-                        oldPage
-                        LoadingHome
-                        LoadingHomeMsg
-                        HomePage
-                        ErroredPage
-            in
-                ( { model | pageState = newPageState }, newCmd )
-
-        ( LoadingItemCollectionMsg subMsg, Transitioning oldPage (LoadingItemCollection subModel) ) ->
-            let
-                ( newPageState, newCmd ) =
-                    PageLoader.defaultTransitionStatusHandler
-                        (LoadingItemCollection.update subMsg subModel)
-                        oldPage
-                        LoadingItemCollection
-                        LoadingItemCollectionMsg
-                        ItemCollectionPage
-                        ErroredPage
-            in
-                ( { model | pageState = newPageState }, newCmd )
-
-        ( NoOp, _ ) ->
-            ( model, Cmd.none )
+        ( LoadingItemCollectionMsg subMsg, Transitioning oldPage (LoadingItemCollection subModel _) ) ->
+            processLoadingItemCollection oldPage (LoadingItemCollection.update subMsg subModel)
+                |> updatePageState model
 
         ( _, _ ) ->
-            let
-                _ =
-                    Debug.log "wrong message for state" (toString ( msg, model.pageState ))
-            in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
 
 
 setRoute : Maybe Routing.Route -> Model -> ( Model, Cmd Msg )
 setRoute maybeRoute model =
-    case maybeRoute of
-        Nothing ->
-            { model | pageState = Loaded NotFoundPage } ! []
+    let
+        oldPage =
+            PageLoader.visualPage model.pageState
+    in
+        case maybeRoute of
+            Nothing ->
+                { model | pageState = Loaded NotFoundPage } ! []
 
-        Just Routing.Home ->
-            let
-                oldPage =
-                    PageLoader.visualPage model.pageState
+            Just Routing.Home ->
+                processLoadingHome oldPage LoadingHome.init
+                    |> updatePageState model
 
-                ( newModel, newCmd ) =
-                    LoadingHome.init
-            in
-                { model | pageState = Transitioning oldPage (LoadingHome newModel) }
-                    ! [ Cmd.map LoadingHomeMsg newCmd ]
+            Just (Routing.ItemCollection slug page) ->
+                processLoadingItemCollection oldPage (LoadingItemCollection.init slug page)
+                    |> updatePageState model
 
-        Just (Routing.ItemCollection slug page) ->
-            let
-                oldPage =
-                    PageLoader.visualPage model.pageState
+            Just Routing.AllItemCollections ->
+                model ! []
 
-                ( newModel, newCmd ) =
-                    LoadingItemCollection.init slug page
-            in
-                { model | pageState = Transitioning oldPage (LoadingItemCollection newModel) }
-                    ! [ Cmd.map LoadingItemCollectionMsg newCmd ]
+            Just Routing.UserAgreement ->
+                { model | pageState = Loaded UserAgreementPage } ! []
 
-        Just Routing.AllItemCollections ->
-            model ! []
 
-        Just Routing.UserAgreement ->
-            { model | pageState = Loaded UserAgreementPage } ! []
+processLoadingHome : Page -> TransitionStatus LoadingHome.Model LoadingHome.Msg Home.Model -> ( PageState Page Loading, Cmd Msg )
+processLoadingHome =
+    PageLoader.defaultProcessLoading ErrorPage LoadingHome LoadingHomeMsg HomePage Home.init (\_ -> NoOp)
+
+
+processLoadingItemCollection : Page -> TransitionStatus LoadingItemCollection.Model LoadingItemCollection.Msg ItemCollection.Model -> ( PageState Page Loading, Cmd Msg )
+processLoadingItemCollection =
+    PageLoader.defaultProcessLoading ErrorPage LoadingItemCollection LoadingItemCollectionMsg ItemCollectionPage ItemCollection.init (\_ -> NoOp)
+
+
+updatePageState : Model -> ( PageState Page Loading, Cmd msg ) -> ( Model, Cmd msg )
+updatePageState model ( pageState, cmd ) =
+    ( { model | pageState = pageState }, cmd )
 
 
 view : Model -> Html Msg
@@ -180,8 +154,8 @@ viewPage page =
         NotFoundPage ->
             NotFound.view
 
-        ErroredPage model ->
-            Errored.view model
+        ErrorPage model ->
+            Error.view model
 
         HomePage model ->
             Home.view model

@@ -1,4 +1,4 @@
-module Page.NotFound.NotFound exposing (view)
+module Page.NotFound exposing (view)
 
 import Element
 import View.Component.Main as Main
